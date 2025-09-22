@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
+import { Text, View, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
 export default function StartupScreen() {
@@ -8,6 +8,13 @@ export default function StartupScreen() {
       colors={['#17192C', '#273e79ff']}
       style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
     >
+      <View style={styles.logoContainer}>
+        <Image 
+          source={require('../../assets/logo.png')} 
+          style={styles.logoImage} 
+        />
+      </View>
+
       <Text style={styles.mainTitle}>HIVE</Text>
       <Text style={styles.subTitle}>Your Entertainment Universe</Text>
       <Text style={styles.description}>
@@ -40,7 +47,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#FFD700',
     textAlign: 'center',
-    marginBottom: 10,
+    marginBottom: 30,
     textShadowColor: '#FFD700',
     textShadowOffset: { width: 0, height: 0 },
     textShadowRadius: 8,
@@ -49,12 +56,12 @@ const styles = StyleSheet.create({
     fontSize: 22,
     color: '#f9f6deff',
     textAlign: 'center',
+    marginBottom: 20,
   },
   description: {
     fontSize: 18,
     color: '#f9f6deff',
     textAlign: 'center',
-    marginTop: 20,
     paddingHorizontal: 40,
   },
   creatButton: {
@@ -78,5 +85,16 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     paddingHorizontal: 32,
     marginTop: 20,
+    marginBottom: 40,
+  },
+  logoContainer: {
+    flex: 0.75,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 60,
+  },
+  logoImage: {
+    width: 200,
+    height: 200,
   },
 });
