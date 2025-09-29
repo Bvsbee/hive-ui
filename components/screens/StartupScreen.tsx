@@ -1,7 +1,6 @@
 import React from "react";
 import { Text, View, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import SignUpPage from "./SignUpPage";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { AuthStackParamList } from "../../models/user/Navigation";
 
@@ -50,7 +49,7 @@ export default function StartupScreen() {
         <TouchableOpacity
           style={[styles.signinButton]}
           onPress={() => {
-            /* go to signin page */
+            navigation.navigate("Login");
           }}
         >
           <Text

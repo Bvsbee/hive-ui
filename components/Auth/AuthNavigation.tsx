@@ -3,6 +3,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import SignUpPage from "../screens/SignUpPage";
 import StartupScreen from "../screens/StartupScreen";
 import { AuthStackParamList } from "../../models/user/Navigation";
+import LoginScreen from "../screens/LoginScreen";
 
 const Stack = createStackNavigator<AuthStackParamList>();
 
@@ -14,6 +15,7 @@ export default function AuthStack() {
     >
       <Stack.Screen name="Startup" component={StartupScreen} />
       <Stack.Screen name="Signup" component={SignUpPage} />
+      <Stack.Screen name="Login" component={LoginScreen} />
     </Stack.Navigator>
   );
 }

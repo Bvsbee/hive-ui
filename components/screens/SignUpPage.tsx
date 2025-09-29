@@ -66,47 +66,47 @@ export default function SignUpPage() {
             placeholder="First Name"
             value={newUser.firstName}
             onChangeText={(text) => handleChange("firstName", text)}
-            style={styles.input}
-            placeholderTextColor="#555"
+            style={styles.textInput}
+            placeholderTextColor="#b0b0b0"
           />
           <TextInput
             placeholder="Last Name"
             value={newUser.lastName}
             onChangeText={(text) => handleChange("lastName", text)}
-            style={styles.input}
-            placeholderTextColor="#555"
+            style={styles.textInput}
+            placeholderTextColor="#b0b0b0"
           />
           <TextInput
             placeholder="Username"
             value={newUser.username}
             onChangeText={(text) => handleChange("username", text)}
-            style={styles.input}
-            placeholderTextColor="#555"
+            style={styles.textInput}
+            placeholderTextColor="#b0b0b0"
           />
           <TextInput
             placeholder="Email"
             value={newUser.email}
             onChangeText={(text) => handleChange("email", text)}
-            style={styles.input}
+            style={styles.textInput}
             keyboardType="email-address"
             autoCapitalize="none"
-            placeholderTextColor="#555"
+            placeholderTextColor="#b0b0b0"
           />
           <TextInput
             placeholder="Password"
             value={newUser.password}
             onChangeText={(text) => handleChange("password", text)}
-            style={styles.input}
+            style={styles.textInput}
             secureTextEntry
-            placeholderTextColor="#555"
+            placeholderTextColor="#b0b0b0"
           />
           <TextInput
             placeholder="Confirm Password"
             value={confirmPassword}
             onChangeText={setConfirmPassword}
-            style={styles.input}
+            style={styles.textInput}
             secureTextEntry
-            placeholderTextColor="#555"
+            placeholderTextColor="#b0b0b0"
           />
           {confirmPassword && confirmPassword !== newUser.password && (
             <Text style={styles.errorText}>Passwords do not match</Text>
@@ -145,16 +145,15 @@ const styles = StyleSheet.create({
     width: "100%",
     marginBottom: 30,
   },
-  input: {
-    backgroundColor: "#fff",
-    color: "#000",
-    fontSize: 18,
-    paddingVertical: 12,
-    paddingHorizontal: 15,
-    borderRadius: 10,
-    marginVertical: 8,
-    borderWidth: 1.5,
-    borderColor: "#FFD700",
+  textInput: {
+    backgroundColor: "#2D3B5C",
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    borderWidth: 1,
+    borderColor: "#4A5A7A",
+    fontSize: 16,
+    color: "#f9f6deff",
   },
   button: {
     backgroundColor: "#FFD700",
