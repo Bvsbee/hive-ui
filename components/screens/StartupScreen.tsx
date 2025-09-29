@@ -1,40 +1,71 @@
 import React from "react";
 import { Text, View, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import SignUpPage from "./SignUpPage";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { AuthStackParamList } from "../../models/user/Navigation";
 
 export default function StartupScreen() {
+  const navigation = useNavigation<NavigationProp<AuthStackParamList>>();
+
   return (
     <LinearGradient
-      colors={['#17192C', '#273e79ff']}
+      colors={["#17192C", "#273e79ff"]}
       style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
     >
       <View style={styles.logoContainer}>
-        <Image 
-          source={require('../../assets/logo.png')} 
-          style={styles.logoImage} 
+        <Image
+          source={require("../../assets/logo.png")}
+          style={styles.logoImage}
         />
       </View>
 
       <Text style={styles.mainTitle}>HIVE</Text>
       <Text style={styles.subTitle}>Your Entertainment Universe</Text>
       <Text style={styles.description}>
-        Discover, track and organize all your favorite movies, TV shows, books, and 
-        anime in one beautifyl place.
+        Discover, track and organize all your favorite movies, TV shows, books,
+        and anime in one beautiful place.
       </Text>
 
       {/* create account and sign in buttons */}
-        <View style={{paddingTop: 40, width: '80%',}}>
+      <View style={{ paddingTop: 40, width: "80%" }}>
+        <TouchableOpacity
+          style={[styles.createButton]}
+          onPress={() => {
+            navigation.navigate("Signup");
+          }}
+        >
+          <Text
+            style={{
+              color: "#000",
+              fontSize: 18,
+              fontWeight: "bold",
+              textAlign: "center",
+            }}
+          >
+            Create Account
+          </Text>
+        </TouchableOpacity>
 
-            <TouchableOpacity style={[styles.creatButton]} onPress={() => { /* go to signup page */ }}>
-                <Text style={{ color: '#000', fontSize: 18, fontWeight: "bold", textAlign: 'center' }}>Create Account</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={[styles.signinButton, ]} onPress={() => { /* go to signin page */ }}>
-                <Text style={{color:'#FFF',fontSize:18, fontWeight: 'bold', textAlign: 'center'}}>Sign In</Text>
-            </TouchableOpacity>
-        </View>
+        <TouchableOpacity
+          style={[styles.signinButton]}
+          onPress={() => {
+            /* go to signin page */
+          }}
+        >
+          <Text
+            style={{
+              color: "#FFF",
+              fontSize: 18,
+              fontWeight: "bold",
+              textAlign: "center",
+            }}
+          >
+            Sign In
+          </Text>
+        </TouchableOpacity>
+      </View>
     </LinearGradient>
-
   );
 }
 
@@ -42,36 +73,36 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  mainTitle:{
+  mainTitle: {
     fontSize: 50,
-    fontWeight: 'bold',
-    color: '#FFD700',
-    textAlign: 'center',
+    fontWeight: "bold",
+    color: "#FFD700",
+    textAlign: "center",
     marginBottom: 30,
-    textShadowColor: '#FFD700',
+    textShadowColor: "#FFD700",
     textShadowOffset: { width: 0, height: 0 },
     textShadowRadius: 8,
   },
-  subTitle:{
+  subTitle: {
     fontSize: 22,
-    color: '#f9f6deff',
-    textAlign: 'center',
+    color: "#f9f6deff",
+    textAlign: "center",
     marginBottom: 20,
   },
   description: {
     fontSize: 18,
-    color: '#f9f6deff',
-    textAlign: 'center',
+    color: "#f9f6deff",
+    textAlign: "center",
     paddingHorizontal: 40,
   },
-  creatButton: {
-    backgroundColor: '#FFD700',
+  createButton: {
+    backgroundColor: "#FFD700",
     borderRadius: 25,
     paddingVertical: 16,
     paddingHorizontal: 32,
   },
   createAccText: {
-    color: '#000',
+    color: "#000",
     fontSize: 20,
     marginHorizontal: 20,
     padding: 10,
@@ -79,7 +110,7 @@ const styles = StyleSheet.create({
   },
   signinButton: {
     backgroundColor: "transparent",
-    borderColor: '#FFD700',
+    borderColor: "#FFD700",
     borderRadius: 25,
     borderWidth: 2,
     paddingVertical: 16,
@@ -89,8 +120,8 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     flex: 0.75,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginTop: 60,
   },
   logoImage: {

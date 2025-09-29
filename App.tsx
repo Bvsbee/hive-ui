@@ -20,20 +20,26 @@ import { NavigationContainer } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet } from "react-native";
 import HomeScreen from "./components/screens/HomeScreen";
-import StartupScreen from "./components/screens/StartupScreen";
-
 import { enableScreens } from "react-native-screens";
+import useAuthStore from "./components/stores/useAuthStore";
+import AuthStack from "./components/Auth/AuthNavigation";
 
 enableScreens();
 const Tab = createBottomTabNavigator();
 
 export default function App() {
+  const user = useAuthStore((state) => state.user);
+
   return (
     <NavigationContainer>
-      <Tab.Navigator>
-        <Tab.Screen name="Home" component={HomeScreen} />
-        <Tab.Screen name="Startup" component={StartupScreen} />
-      </Tab.Navigator>
+      {user ? (
+        <Tab.Navigator>
+          <Tab.Screen name="Home" component={HomeScreen} />
+        </Tab.Navigator>
+      ) : (
+        <AuthStack />
+      )}
+      <StatusBar style="auto" />
     </NavigationContainer>
   );
 }
