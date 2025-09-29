@@ -21,6 +21,7 @@ import { StatusBar } from "expo-status-bar";
 import { StyleSheet } from "react-native";
 import HomeScreen from "./components/screens/HomeScreen";
 import StartupScreen from "./components/screens/StartupScreen";
+import LoginScreen from "./components/screens/LoginScreen";
 
 import { enableScreens } from "react-native-screens";
 
@@ -33,6 +34,7 @@ export default function App() {
       <Tab.Navigator>
         <Tab.Screen name="Home" component={HomeScreen} />
         <Tab.Screen name="Startup" component={StartupScreen} />
+        <Tab.Screen name="Login" component={LoginScreen} />
       </Tab.Navigator>
     </NavigationContainer>
   );
