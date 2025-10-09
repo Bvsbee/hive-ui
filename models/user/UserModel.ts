@@ -7,3 +7,9 @@ export interface UserModel {
   password: string;
   dateCreated?: string;
 }
+
+export interface LoginPayload {
+  email?: string;
+  username?: string;
+  password: string;
+}

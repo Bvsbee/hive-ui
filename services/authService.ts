@@ -1,17 +1,48 @@
 // services/authService.ts
-import axios from "axios";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { UserModel } from "../models/user/UserModel";
+import hiveAPI from "./hiveAPI";
+import useAuthStore from "../components/stores/useAuthStore";
 
-export const createUser = async (newUser: UserModel) => {
-  const response = await axios.post("http://localhost:3000/user", newUser);
-  return response.data;
+const createUser = async (newUser: UserModel): Promise<UserModel> => {
+  const { data } = await hiveAPI.post("/user", newUser);
+  return data;
 };
 
-export const loginUser = async (email: string, password: string) => {
-  const response = await axios.post("http://localhost:3000/auth/login", {
-    email,
-    password,
+export const useCreateUser = () => {
+  return useMutation<UserModel, Error, UserModel>({
+    mutationFn: createUser,
   });
+};
 
-  return response.data;
+const loginUser = async (email: string, password?: string) => {
+  const payload = { email, password };
+  if (email && password) {
+    const { data } = await hiveAPI.post("auth/login", payload);
+
+    localStorage.setItem("token", data.access_token);
+
+    return data;
+  }
+  return "Must complete all fields";
+};
+
+export const useLoginUser = () => {
+  const signIn = useAuthStore((state) => state.signIn);
+
+  return useMutation({
+    mutationFn: ({ email, password }: { email: string; password: string }) =>
+      loginUser(email, password),
+    onSuccess: (data) => {
+      signIn(data.user);
+    },
+    onError: (error: any) => {
+      console.error("Login failed:", error.response?.data || error.message);
+    },
+  });
+};
+
+export const logoutUser = async () => {
+  await hiveAPI.post("/logout");
+  return true;
 };

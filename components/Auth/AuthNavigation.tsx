@@ -4,6 +4,8 @@ import SignUpPage from "../screens/SignUpPage";
 import StartupScreen from "../screens/StartupScreen";
 import { AuthStackParamList } from "../../models/user/Navigation";
 import LoginScreen from "../screens/LoginScreen";
+import AccountInfo from "../AccountCreation/AccountInfo";
+import ProfileSetup from "../AccountCreation/ProfileSetup";
 
 const Stack = createStackNavigator<AuthStackParamList>();
 

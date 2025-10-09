@@ -1,18 +1,23 @@
-import React, { use, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import {
   Text,
   View,
   Image,
   TouchableOpacity,
   StyleSheet,
-  TextInput,
   Alert,
   ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+  BackHandler,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { createUser } from "../../services/authService";
 import { UserModel } from "../../models/user/UserModel";
-import useAuthStore from "../stores/useAuthStore";
+import AccountInfo from "../AccountCreation/AccountInfo";
+import ProfileSetup from "../AccountCreation/ProfileSetup";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { AuthStackParamList } from "../../models/user/Navigation";
+import { useCreateUser } from "../../services/authService";
 
 export default function SignUpPage() {
   const [newUser, setNewUser] = useState<UserModel>({
@@ -22,24 +27,62 @@ export default function SignUpPage() {
     firstName: "",
     lastName: "",
   });
+  const { mutate, isError, error, isPending } = useCreateUser();
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [step, setStep] = useState(1);
+
+  const navigation = useNavigation<NavigationProp<AuthStackParamList>>();
 
   const handleChange = (key: keyof UserModel, value: string) => {
     setNewUser((prev) => ({ ...prev, [key]: value }));
   };
+  const handleNext = () => {
+    if (step === 1) {
+      // Validate step 1
+      if (!newUser.email || !newUser.password) {
+        Alert.alert("Please fill in all fields");
+        return;
+      }
 
-  const signIn = useAuthStore((state) => state.signIn);
+      if (newUser.password !== confirmPassword) {
+        Alert.alert("Passwords do not match");
+        return;
+      }
+      setStep(2);
+    } else {
+      // On step 2, trigger signup
+      handleSignUp();
+    }
+  };
+
+  const handleBack = () => {
+    if (step > 1) {
+      setStep(step - 1);
+    } else {
+      navigation.navigate("Startup");
+    }
+  };
+  useEffect(() => {
+    const backAction = () => {
+      if (step > 1) {
+        setStep(step - 1); // go to previous step
+        return true; // prevent default navigation
+      }
+      return false; // allow default navigation (Startup screen or exit)
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, [step]);
 
   const handleSignUp = async () => {
-    if (newUser.password !== confirmPassword) {
-      Alert.alert("Passwords do not match");
-      return;
-    }
-
     try {
-      ("Hello");
-      const user = await createUser(newUser);
-      signIn(user);
+      mutate(newUser);
+      if (!isPending && !isError) navigation.navigate("Login");
     } catch (error: any) {
       Alert.alert(
         "Signup failed",
@@ -50,73 +93,48 @@ export default function SignUpPage() {
 
   return (
     <LinearGradient colors={["#17192C", "#273E79"]} style={styles.container}>
-      <ScrollView
-        contentContainerStyle={styles.scrollContainer}
-        keyboardShouldPersistTaps="handled"
+      {isError && <Text>{error?.message}</Text>}
+      <KeyboardAvoidingView
+        style={{ flex: 1, width: "100%" }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
-        <View style={styles.logoContainer}>
-          <Image
-            source={require("../../assets/logo.png")}
-            style={styles.logoImage}
-          />
-        </View>
-
-        <View style={styles.formContainer}>
-          <TextInput
-            placeholder="First Name"
-            value={newUser.firstName}
-            onChangeText={(text) => handleChange("firstName", text)}
-            style={styles.textInput}
-            placeholderTextColor="#b0b0b0"
-          />
-          <TextInput
-            placeholder="Last Name"
-            value={newUser.lastName}
-            onChangeText={(text) => handleChange("lastName", text)}
-            style={styles.textInput}
-            placeholderTextColor="#b0b0b0"
-          />
-          <TextInput
-            placeholder="Username"
-            value={newUser.username}
-            onChangeText={(text) => handleChange("username", text)}
-            style={styles.textInput}
-            placeholderTextColor="#b0b0b0"
-          />
-          <TextInput
-            placeholder="Email"
-            value={newUser.email}
-            onChangeText={(text) => handleChange("email", text)}
-            style={styles.textInput}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            placeholderTextColor="#b0b0b0"
-          />
-          <TextInput
-            placeholder="Password"
-            value={newUser.password}
-            onChangeText={(text) => handleChange("password", text)}
-            style={styles.textInput}
-            secureTextEntry
-            placeholderTextColor="#b0b0b0"
-          />
-          <TextInput
-            placeholder="Confirm Password"
-            value={confirmPassword}
-            onChangeText={setConfirmPassword}
-            style={styles.textInput}
-            secureTextEntry
-            placeholderTextColor="#b0b0b0"
-          />
-          {confirmPassword && confirmPassword !== newUser.password && (
-            <Text style={styles.errorText}>Passwords do not match</Text>
-          )}
-        </View>
-
-        <TouchableOpacity style={styles.button} onPress={handleSignUp}>
-          <Text style={styles.buttonText}>Create Account</Text>
+        <TouchableOpacity style={styles.backButton} onPress={handleBack}>
+          <Text style={{ fontSize: 24, color: "#ffd700", fontWeight: "bold" }}>
+            ←
+          </Text>
         </TouchableOpacity>
-      </ScrollView>
+        <ScrollView
+          contentContainerStyle={styles.scrollContainer}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.logoContainer}>
+            <Image
+              source={require("../../assets/logo.png")}
+              style={styles.logoImage}
+            />
+          </View>
+
+          <View style={styles.formContainer}>
+            {step == 1 && (
+              <AccountInfo
+                handleChange={handleChange}
+                newUser={newUser}
+                confirmPassword={confirmPassword}
+                setConfirmPassword={setConfirmPassword}
+              />
+            )}
+            {step == 2 && (
+              <ProfileSetup handleChange={handleChange} newUser={newUser} />
+            )}
+          </View>
+
+          <TouchableOpacity style={styles.button} onPress={handleNext}>
+            <Text style={styles.buttonText}>
+              {step === 1 ? "Next" : "Create Account"}
+            </Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </LinearGradient>
   );
 }
@@ -124,6 +142,12 @@ export default function SignUpPage() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  backButton: {
+    position: "absolute",
+    top: 50,
+    left: 20,
+    zIndex: 10,
   },
   scrollContainer: {
     flexGrow: 1,
@@ -172,5 +196,11 @@ const styles = StyleSheet.create({
     color: "#FF4D4D",
     fontSize: 14,
     marginTop: 5,
+  },
+  textLabel: {
+    fontSize: 16,
+    color: "#f9f6deff",
+    marginBottom: 8,
+    fontWeight: "500",
   },
 });
