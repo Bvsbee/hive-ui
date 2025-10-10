@@ -18,28 +18,32 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet } from "react-native";
 import HomeScreen from "./components/screens/HomeScreen";
 import { enableScreens } from "react-native-screens";
+import useAuthStore from "./components/stores/useAuthStore";
+import AuthStack from "./components/Auth/AuthNavigation";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 enableScreens();
 const Tab = createBottomTabNavigator();
 
 export default function App() {
+  const user = useAuthStore((state) => state.user);
+
+  const queryClient = new QueryClient();
+
   return (
     <NavigationContainer>
-      <Tab.Navigator>
-        <Tab.Screen name="Home" component={HomeScreen} />
-      </Tab.Navigator>
+      <QueryClientProvider client={queryClient}>
+        {user ? (
+          <Tab.Navigator>
+            <Tab.Screen name="Home" component={HomeScreen} />
+          </Tab.Navigator>
+        ) : (
+          <AuthStack />
+        )}
+        <StatusBar style="auto" />
+      </QueryClientProvider>
     </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
