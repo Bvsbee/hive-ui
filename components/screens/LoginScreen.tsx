@@ -58,10 +58,10 @@ export default function LoginScreen() {
 
         <View style={{ paddingHorizontal: 20, marginBottom: 30 }}>
           <View style={styles.inputContainer}>
-            <Text style={styles.textLabel}>Email or Username</Text>
+            <Text style={styles.textLabel}>Email</Text>
             <TextInput
               style={styles.textInput}
-              placeholder="Enter your email or username"
+              placeholder="Enter your email"
               placeholderTextColor="#b0b0b0"
               value={email}
               onChangeText={setEmail}

@@ -50,6 +50,9 @@ export default function SignUpPage() {
       }
       setStep(2);
     } else {
+      if (!newUser.username || !newUser.firstName || !newUser.lastName) {
+        return Alert.alert("Please fill in all fields");
+      }
       // On step 2, trigger signup
       handleSignUp();
     }
