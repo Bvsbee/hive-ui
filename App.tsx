@@ -23,6 +23,8 @@ import { enableScreens } from "react-native-screens";
 import useAuthStore from "./components/stores/useAuthStore";
 import AuthStack from "./components/Auth/AuthNavigation";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import ListScreen from "./components/screens/ListScreen";
+import { StyleSheet, Text } from "react-native";
 
 enableScreens();
 const Tab = createBottomTabNavigator();
@@ -36,14 +38,64 @@ export default function App() {
     <NavigationContainer>
       <QueryClientProvider client={queryClient}>
         {user ? (
-          <Tab.Navigator>
-            <Tab.Screen name="Home" component={HomeScreen} />
-          </Tab.Navigator>
-        ) : (
           <AuthStack />
+        ) : (
+          <Tab.Navigator
+            screenOptions={({ route }) => ({
+              // Access route information
+              headerShown: false,
+              tabBarStyle: {
+                backgroundColor: "#090f0f",
+              },
+              tabBarIcon: ({ focused, color, size }) => {
+                let iconEmoji;
+
+                if (route.name === "Home") {
+                  iconEmoji = "🏠"; // Home emoji
+                } else if (route.name === "List") {
+                  // Assuming you have a ListScreen tab
+                  iconEmoji = "📋";
+                }
+                // Add more conditions for other tabs
+
+                return (
+                  <>
+                    <Text style={{ fontSize: size, color: color }}>
+                      {iconEmoji}
+                    </Text>
+                  </>
+                );
+              },
+              tabBarActiveTintColor: "white", // Example active color
+              tabBarInactiveTintColor: "gray", // Example inactive color
+            })}
+          >
+            <Tab.Screen
+              name="Home"
+              component={HomeScreen}
+              options={{ headerShown: false }}
+            />
+            <Tab.Screen name="List" component={ListScreen} />
+          </Tab.Navigator>
         )}
         <StatusBar style="auto" />
       </QueryClientProvider>
     </NavigationContainer>
   );
 }
+
+const styles = StyleSheet.create({
+  tabBarContainer: {
+    flexDirection: "row",
+    backgroundColor: "white",
+    borderTopWidth: 1,
+    borderTopColor: "#ccc",
+    paddingVertical: 10,
+    justifyContent: "space-around",
+    alignItems: "center",
+  },
+  tabItem: {
+    flex: 1,
+    alignItems: "center",
+  },
+});
