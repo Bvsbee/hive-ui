@@ -3,7 +3,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import SignUpPage from "../screens/SignUpPage";
 import StartupScreen from "../screens/StartupScreen";
 import ListScreen from "../screens/ListScreen";
-import { AuthStackParamList } from "../../models/user/Navigation";
+import { AuthStackParamList } from "../../models/Navigation";
 import LoginScreen from "../screens/LoginScreen";
 
 import AccountInfo from "../AccountCreation/AccountInfo";

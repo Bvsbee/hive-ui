@@ -2,7 +2,7 @@ import React from "react";
 import { Text, View, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { AuthStackParamList } from "../../models/user/Navigation";
+import { AuthStackParamList } from "../../models/Navigation";
 
 export default function StartupScreen() {
   const navigation = useNavigation<NavigationProp<AuthStackParamList>>();
@@ -45,7 +45,6 @@ export default function StartupScreen() {
             Create Account
           </Text>
         </TouchableOpacity>
-
         <TouchableOpacity
           style={[styles.signinButton]}
           onPress={() => {
@@ -63,7 +62,6 @@ export default function StartupScreen() {
             Sign In
           </Text>
         </TouchableOpacity>
-        
         // List Screen button temp for testing
         <TouchableOpacity
           style={[styles.signinButton]}

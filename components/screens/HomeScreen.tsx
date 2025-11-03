@@ -15,12 +15,13 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { AuthStackParamList } from "../../models/user/Navigation";
-import {UserModel}  from "../../models/user/UserModel";
-
+import { AuthStackParamList } from "../../models/Navigation";
+import { UserModel } from "../../models/UserModel";
+import { getTvShows } from "../../services/mediaService";
 
 export default function HomeScreen() {
   // const { user } = useAuthStore((state) => console.log(state));
+
   const [user, setUser] = useState<UserModel>({
     username: "john123",
     firstName: "John",
@@ -28,6 +29,11 @@ export default function HomeScreen() {
     email: "john@example.com",
     password: "hidden",
   });
+
+  const tvShows = getTvShows();
+
+  console.log(tvShows);
+
   return (
     <LinearGradient colors={["#17192C", "#273e79ff"]} style={{ flex: 1 }}>
       <KeyboardAvoidingView
@@ -35,8 +41,8 @@ export default function HomeScreen() {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <View style={styles.header}>
-          <Text style={styles.headerTitle}> {`Hello, ${user.firstName}!`}</Text> 
-                </View>
+          <Text style={styles.headerTitle}> {`Hello, ${user.firstName}!`}</Text>
+        </View>
         <TextInput
           style={styles.searchInput}
           placeholder="Search..."
@@ -50,22 +56,23 @@ export default function HomeScreen() {
                 title: "Stranger Things",
                 poster:
                   "https://www.themoviedb.org/t/p/w1280/x2LSRK2Cm7MZhjluni1msVJ3wDF.jpg",
-              }, {
+              },
+              {
                 title: "Stranger Things",
                 poster:
                   "https://www.themoviedb.org/t/p/w1280/x2LSRK2Cm7MZhjluni1msVJ3wDF.jpg",
-              }, {
+              },
+              {
                 title: "Stranger Things",
                 poster:
                   "https://www.themoviedb.org/t/p/w1280/x2LSRK2Cm7MZhjluni1msVJ3wDF.jpg",
-              }, {
+              },
+              {
                 title: "Stranger Things",
                 poster:
                   "https://www.themoviedb.org/t/p/w1280/x2LSRK2Cm7MZhjluni1msVJ3wDF.jpg",
-              }, 
-          
+              },
             ]}
-
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{ paddingHorizontal: 10 }}
@@ -98,7 +105,7 @@ const styles = StyleSheet.create({
     textShadowColor: "#FFD700",
     textShadowOffset: { width: 0, height: 0 },
     textShadowRadius: 8,
-  }, 
+  },
   container: {
     flex: 1,
     padding: 20,
@@ -122,7 +129,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
 
-  
   listIcon: {
     width: 50,
     height: 50,
@@ -149,6 +155,4 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: "#273e79",
   },
-
-
 });

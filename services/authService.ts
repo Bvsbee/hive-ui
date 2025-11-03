@@ -1,6 +1,6 @@
 // services/authService.ts
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { UserModel } from "../models/user/UserModel";
+import { UserModel } from "../models/UserModel";
 import hiveAPI from "./hiveAPI";
 import useAuthStore from "../components/stores/useAuthStore";
 
