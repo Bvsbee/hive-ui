@@ -1,9 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
 import hiveAPI from "./hiveAPI";
-import axios from "axios";
+import { TvShow } from "../models/tvShow";
 
-export const getTvShows = async () => {
-  axios.get("http://localhost:3000/tmdb/discover/tv").then((response) => {
-    return response.data;
+const fetchTvShows = async () => {
+  const response = await hiveAPI.get("/tmdb/discover/tv");
+  return response.data;
+};
+
+export const useFetchTvShows = () => {
+  return useQuery<TvShow[]>({
+    queryKey: ["tvShows"],
+    queryFn: fetchTvShows,
   });
 };

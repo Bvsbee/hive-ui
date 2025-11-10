@@ -17,7 +17,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { AuthStackParamList } from "../../models/Navigation";
 import { UserModel } from "../../models/UserModel";
-import { getTvShows } from "../../services/mediaService";
+import { useFetchTvShows } from "../../services/mediaService";
 
 export default function HomeScreen() {
   // const { user } = useAuthStore((state) => console.log(state));
@@ -30,9 +30,9 @@ export default function HomeScreen() {
     password: "hidden",
   });
 
-  const tvShows = getTvShows();
+  const { data: tvShows, isLoading, isError, error } = useFetchTvShows();
 
-  console.log(tvShows);
+  console.log({ tvShows });
 
   return (
     <LinearGradient colors={["#17192C", "#273e79ff"]} style={{ flex: 1 }}>
@@ -51,34 +51,16 @@ export default function HomeScreen() {
         <View style={styles.container}>
           <Text style={styles.sectionTitle}>Shows</Text>
           <FlatList
-            data={[
-              {
-                title: "Stranger Things",
-                poster:
-                  "https://www.themoviedb.org/t/p/w1280/x2LSRK2Cm7MZhjluni1msVJ3wDF.jpg",
-              },
-              {
-                title: "Stranger Things",
-                poster:
-                  "https://www.themoviedb.org/t/p/w1280/x2LSRK2Cm7MZhjluni1msVJ3wDF.jpg",
-              },
-              {
-                title: "Stranger Things",
-                poster:
-                  "https://www.themoviedb.org/t/p/w1280/x2LSRK2Cm7MZhjluni1msVJ3wDF.jpg",
-              },
-              {
-                title: "Stranger Things",
-                poster:
-                  "https://www.themoviedb.org/t/p/w1280/x2LSRK2Cm7MZhjluni1msVJ3wDF.jpg",
-              },
-            ]}
+            data={tvShows}
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{ paddingHorizontal: 10 }}
             renderItem={({ item }) => (
               <TouchableOpacity style={styles.card}>
-                <Image source={{ uri: item.poster }} style={styles.poster} />
+                <Image
+                  source={{ uri: item.posterPath }}
+                  style={styles.poster}
+                />
                 <Text style={styles.movieTitle}>{item.title}</Text>
               </TouchableOpacity>
             )}
