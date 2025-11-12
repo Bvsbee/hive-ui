@@ -34,6 +34,8 @@ export default function HomeScreen() {
 
   console.log({ tvShows });
 
+  const baseUrl = "https://image.tmdb.org/t/p/w500/";
+
   return (
     <LinearGradient colors={["#17192C", "#273e79ff"]} style={{ flex: 1 }}>
       <KeyboardAvoidingView
@@ -56,13 +58,20 @@ export default function HomeScreen() {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{ paddingHorizontal: 10 }}
             renderItem={({ item }) => (
-              <TouchableOpacity style={styles.card}>
-                <Image
-                  source={{ uri: item.posterPath }}
-                  style={styles.poster}
-                />
+              <>
+                <TouchableOpacity
+                  onPress={(e) => {
+                    console.log();
+                  }}
+                  style={styles.card}
+                >
+                  <Image
+                    source={{ uri: `${baseUrl}${item.posterPath}` }}
+                    style={styles.poster}
+                  />
+                </TouchableOpacity>
                 <Text style={styles.movieTitle}>{item.title}</Text>
-              </TouchableOpacity>
+              </>
             )}
           />
         </View>
