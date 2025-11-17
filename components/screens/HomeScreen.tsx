@@ -1,56 +1,45 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Text,
   View,
   StyleSheet,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  ScrollView,
-  Image,
   KeyboardAvoidingView,
   Platform,
   TextInput,
-  ActivityIndicator,
-  Alert,
-  FlatList,
-  Modal,
 } from "react-native";
-import { Picker } from "@react-native-picker/picker";
-
 import { LinearGradient } from "expo-linear-gradient";
-import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { AuthStackParamList } from "../../models/Navigation";
-import { UserModel } from "../../models/UserModel";
-import { useFetchTvShows } from "../../services/mediaService";
+import useAuthStore from "../stores/useAuthStore";
+import {
+  fetchAnime,
+  fetchBooks,
+  fetchMovies,
+  fetchTvShows,
+  useFetchAnime,
+  useFetchBooks,
+  useFetchMovies,
+  useFetchTvShows,
+} from "../../services/mediaService";
+import { useQueryClient } from "@tanstack/react-query";
+import TrendingTVShows from "../TrendingMedia/TrendingTVShows";
+import TrendingMovies from "../TrendingMedia/TrendingMovies";
+import TrendingAnime from "../TrendingMedia/TrendingAnime";
+import { ScrollView } from "react-native-gesture-handler";
 
 export default function HomeScreen() {
-  // const { user } = useAuthStore((state) => console.log(state));
+  const user = useAuthStore((state) => state.user);
 
-  const [selectedShow, setSelectedShow] = useState<any>(null);
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    queryClient.prefetchQuery({ queryKey: ["tvShows"], queryFn: fetchTvShows });
+    queryClient.prefetchQuery({ queryKey: ["movies"], queryFn: fetchMovies });
+    queryClient.prefetchQuery({ queryKey: ["books"], queryFn: fetchBooks });
+    queryClient.prefetchQuery({ queryKey: ["anime"], queryFn: fetchAnime });
+  }, []);
+
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedList, setSelectedList] = useState<string>("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
-
-
-  const mockLists = [
-    { id: "1", name: "Favorites" },
-    { id: "2", name: "Watch Later" },
-    { id: "3", name: "TV" },
-  ];
-
-  const [user, setUser] = useState<UserModel>({
-    username: "john123",
-    firstName: "John",
-    lastName: "Doe",
-    email: "john@example.com",
-    password: "hidden",
-  });
-
-  const { data: tvShows, isLoading, isError, error } = useFetchTvShows();
-
-  console.log({ tvShows });
-
-  const baseUrl = "https://image.tmdb.org/t/p/w500/";
 
   return (
     <LinearGradient colors={["#17192C", "#273e79ff"]} style={{ flex: 1 }}>
@@ -67,116 +56,12 @@ export default function HomeScreen() {
           placeholderTextColor="#aaa"
         />
         <View style={styles.container}>
-          <Text style={styles.sectionTitle}>Shows</Text>
-          <FlatList
-            data={tvShows}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ paddingHorizontal: 10 }}
-            renderItem={({ item }) => (
-              <>
-                <TouchableOpacity
-                  onPress={(e) => {
-                    setSelectedShow(item);
-                    setModalVisible(true);
-                  }}
-                  style={styles.card}
-                >
-                  <Image
-                    source={{ uri: `${baseUrl}${item.posterPath}` }}
-                    style={styles.poster}
-                  />
-                </TouchableOpacity>
-                <Text style={styles.movieTitle}>{item.title}</Text>
-              </>
-            )}
-          />
+          <ScrollView contentContainerStyle={styles.scrollContainer}>
+            <TrendingTVShows />
+            <TrendingMovies />
+            <TrendingAnime />
+          </ScrollView>
         </View>
-        <Modal
-          visible={modalVisible}
-          transparent
-          animationType="slide"
-          onRequestClose={() => setModalVisible(false)}
-        >
-          {/* CLOSE MODAL WHEN CLICKING OUTSIDE */}
-          <TouchableOpacity
-            activeOpacity={1}
-            style={styles.modalOverlay}
-            onPress={() => {
-              setModalVisible(false);
-              setDropdownOpen(false);
-            }}
-          >
-            <TouchableWithoutFeedback onPress={() => setDropdownOpen(false)}>
-              <View style={styles.modalSheet}>
-
-                {/* Poster */}
-                {selectedShow && (
-                  <Image
-                    source={{ uri: `${baseUrl}${selectedShow.posterPath}` }}
-                    style={styles.modalPoster}
-                  />
-                )}            
-                <View style={styles.dropdownWrapper}>
-                  <Text style={styles.pickerLabel}>Add to List</Text>
-
-                  <TouchableOpacity
-                    style={styles.dropdownBox}
-                    onPress={() => setDropdownOpen(!dropdownOpen)}
-                    activeOpacity={0.8}
-                  >
-                    <Text style={{ color: "#FFF" }}>
-                      {selectedList
-                        ? mockLists.find((l) => l.id === selectedList)?.name
-                        : "Select a list..."}
-                    </Text>
-                  </TouchableOpacity>
-
-                  {dropdownOpen && (
-                    <View style={styles.dropdownMenu}>
-                      {mockLists.map((list) => (
-                        <TouchableOpacity
-                          key={list.id}
-                          style={styles.dropdownItem}
-                          onPress={() => {
-                            setSelectedList(list.id);
-                            setDropdownOpen(false);
-                          }}
-                        >
-                          <Text style={{ color: "#FFF" }}>{list.name}</Text>
-                        </TouchableOpacity>
-                      ))}
-                    </View>
-                  )}
-                </View>
-
-                <TouchableOpacity
-                  style={styles.addButton}
-                  onPress={() => {
-                    if (!selectedList) {
-                    console.log("No list selected");
-                      return;
-                    }
-                  console.log ("Added to list")                    
-                  setModalVisible(false);
-                  }}
-                >
-                  <Text style={styles.addButtonText}>Add to List</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  onPress={() => setModalVisible(false)}
-                  style={styles.closeButton}
-                >
-                  <Text style={styles.closeText}>Close</Text>
-                </TouchableOpacity>
-
-              </View>
-            </TouchableWithoutFeedback>
-          </TouchableOpacity>
-        </Modal>
-
-
       </KeyboardAvoidingView>
     </LinearGradient>
   );
@@ -256,7 +141,7 @@ const styles = StyleSheet.create({
 
   modalSheet: {
     backgroundColor: "#1b1d2e",
-    height: "50%",            // ⬅️ half-screen modal
+    height: "50%", // ⬅️ half-screen modal
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     padding: 20,
@@ -336,7 +221,9 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#FFD700",
     marginBottom: 6,
-  }
-
-
+  },
+  scrollContainer: {
+    padding: 20,
+    paddingBottom: 50,
+  },
 });

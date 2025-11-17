@@ -6,9 +6,6 @@ import ListScreen from "../screens/ListScreen";
 import { AuthStackParamList } from "../../models/Navigation";
 import LoginScreen from "../screens/LoginScreen";
 
-import AccountInfo from "../AccountCreation/AccountInfo";
-import ProfileSetup from "../AccountCreation/ProfileSetup";
-
 const Stack = createStackNavigator<AuthStackParamList>();
 
 export default function AuthStack() {

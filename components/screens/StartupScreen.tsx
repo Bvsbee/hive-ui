@@ -62,24 +62,6 @@ export default function StartupScreen() {
             Sign In
           </Text>
         </TouchableOpacity>
-        // List Screen button temp for testing
-        <TouchableOpacity
-          style={[styles.signinButton]}
-          onPress={() => {
-            navigation.navigate("List");
-          }}
-        >
-          <Text
-            style={{
-              color: "#FFF",
-              fontSize: 18,
-              fontWeight: "bold",
-              textAlign: "center",
-            }}
-          >
-            List Screen
-          </Text>
-        </TouchableOpacity>
       </View>
     </LinearGradient>
   );
