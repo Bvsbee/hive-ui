@@ -14,16 +14,13 @@ import {
   fetchBooks,
   fetchMovies,
   fetchTvShows,
-  useFetchAnime,
-  useFetchBooks,
-  useFetchMovies,
-  useFetchTvShows,
 } from "../../services/mediaService";
 import { useQueryClient } from "@tanstack/react-query";
 import TrendingTVShows from "../TrendingMedia/TrendingTVShows";
 import TrendingMovies from "../TrendingMedia/TrendingMovies";
 import TrendingAnime from "../TrendingMedia/TrendingAnime";
 import { ScrollView } from "react-native-gesture-handler";
+import CreateMediaListModal from "../CreateList/CreateMediaListModal";
 
 export default function HomeScreen() {
   const user = useAuthStore((state) => state.user);
@@ -36,10 +33,6 @@ export default function HomeScreen() {
     queryClient.prefetchQuery({ queryKey: ["books"], queryFn: fetchBooks });
     queryClient.prefetchQuery({ queryKey: ["anime"], queryFn: fetchAnime });
   }, []);
-
-  const [modalVisible, setModalVisible] = useState(false);
-  const [selectedList, setSelectedList] = useState<string>("");
-  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   return (
     <LinearGradient colors={["#17192C", "#273e79ff"]} style={{ flex: 1 }}>
@@ -62,6 +55,8 @@ export default function HomeScreen() {
             <TrendingAnime />
           </ScrollView>
         </View>
+
+        <CreateMediaListModal />
       </KeyboardAvoidingView>
     </LinearGradient>
   );
@@ -133,95 +128,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: "#273e79",
   },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.6)",
-    justifyContent: "flex-end",
-  },
 
-  modalSheet: {
-    backgroundColor: "#1b1d2e",
-    height: "50%", // ⬅️ half-screen modal
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    padding: 20,
-    alignItems: "center",
-  },
-
-  modalPoster: {
-    width: 130,
-    height: 190,
-    borderRadius: 10,
-    marginBottom: 12,
-  },
-
-  modalTitle: {
-    color: "#ed3838ff",
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 20,
-    textAlign: "center",
-  },
-
-  addButton: {
-    backgroundColor: "#FFD700",
-    paddingVertical: 12,
-    paddingHorizontal: 40,
-    borderRadius: 12,
-    marginBottom: 15,
-  },
-
-  addButtonText: {
-    color: "#000",
-    fontWeight: "bold",
-    fontSize: 16,
-  },
-
-  closeButton: {
-    padding: 8,
-  },
-
-  closeText: {
-    color: "#FFF",
-    fontSize: 15,
-  },
-  dropdownWrapper: {
-    width: "90%",
-    marginBottom: 20,
-  },
-
-  dropdownBox: {
-    backgroundColor: "#1F2236",
-    borderRadius: 14,
-    borderWidth: 1.2,
-    borderColor: "rgba(255, 215, 0, 0.45)",
-    paddingHorizontal: 12,
-    height: 54,
-    justifyContent: "center",
-  },
-
-  dropdownMenu: {
-    marginTop: 6,
-    backgroundColor: "#1F2236",
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "rgba(255, 215, 0, 0.35)",
-    overflow: "hidden",
-  },
-
-  dropdownItem: {
-    paddingVertical: 12,
-    paddingHorizontal: 14,
-    borderBottomWidth: 1,
-    borderColor: "rgba(255,255,255,0.08)",
-  },
-  pickerLabel: {
-    fontSize: 16,
-    textAlign: "left",
-    fontWeight: "600",
-    color: "#FFD700",
-    marginBottom: 6,
-  },
   scrollContainer: {
     padding: 20,
     paddingBottom: 50,

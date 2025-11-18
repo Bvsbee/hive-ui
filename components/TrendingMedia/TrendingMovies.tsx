@@ -16,7 +16,8 @@ const TrendingMovies = () => {
 
   const baseUrl = "https://image.tmdb.org/t/p/w500/";
 
-  if (isLoading) return <Text>Loading Movies...</Text>;
+  if (isLoading)
+    return <Text style={{ color: "white" }}>Loading Movies...</Text>;
   if (error) return <Text>Error loading Movies</Text>;
 
   return (

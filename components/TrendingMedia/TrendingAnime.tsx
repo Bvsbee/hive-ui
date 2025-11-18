@@ -14,7 +14,8 @@ const TrendingTVShows = () => {
 
   const { data: anime, isLoading, isError, error } = useFetchAnime();
 
-  if (isLoading) return <Text>Loading Anime...</Text>;
+  if (isLoading)
+    return <Text style={{ color: "white" }}>Loading Anime...</Text>;
   if (error) return <Text>Error loading Anime</Text>;
 
   return (
