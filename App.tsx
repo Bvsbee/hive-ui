@@ -39,7 +39,7 @@ export default function App() {
     <NavigationContainer>
       <GestureHandlerRootView style={{ flex: 1 }}>
         <QueryClientProvider client={queryClient}>
-          {user ? (
+          {user?.email ? ( 
             <Tab.Navigator
               screenOptions={({ route }) => ({
                 // Access route information

@@ -56,7 +56,7 @@ export default function HomeScreen() {
           </ScrollView>
         </View>
 
-        <CreateMediaListModal />
+        {/* <CreateMediaListModal /> */}
       </KeyboardAvoidingView>
     </LinearGradient>
   );
