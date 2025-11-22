@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import hiveAPI from "./hiveAPI";
 
 
@@ -15,3 +15,27 @@ export const useFetchUserLists = (userGuid: string) => {
     queryFn: () => fetchUserLists(userGuid!),
   });
 };
+
+
+//create list function
+export const createList = async (listData: {
+    userGuid: string;
+    name: string;
+    icon: string;
+    allowedMediaTypes: string[];
+}) => {
+    const response = await hiveAPI.post("/list", listData);
+    return response.data;
+};
+
+//hook to create list
+export const useCreateList = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: createList ,
+        onSuccess: (data, variables) => {
+            // Invalidate and refetch user lists after creating a new list
+            queryClient.invalidateQueries({ queryKey: ["userLists", variables.userGuid] });
+        },
+    })};
+
