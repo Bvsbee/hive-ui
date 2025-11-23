@@ -52,7 +52,6 @@ const TrendingTVShows = () => {
                 style={styles.poster}
               />
             </TouchableOpacity>
-            <Text style={styles.movieTitle}>{item.title}</Text>
 
             <Modal
               visible={modalVisible}

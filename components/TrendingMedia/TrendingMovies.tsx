@@ -48,7 +48,6 @@ const TrendingMovies = () => {
                 style={styles.poster}
               />
             </TouchableOpacity>
-            <Text style={styles.movieTitle}>{item.title}</Text>
           </>
         )}
       />
