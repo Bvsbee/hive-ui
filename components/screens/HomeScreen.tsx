@@ -19,6 +19,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import TrendingTVShows from "../TrendingMedia/TrendingTVShows";
 import TrendingMovies from "../TrendingMedia/TrendingMovies";
 import TrendingAnime from "../TrendingMedia/TrendingAnime";
+import TrendingBooks from "../TrendingMedia/TrendingBooks";
 import { ScrollView } from "react-native-gesture-handler";
 import CreateMediaListModal from "../CreateList/CreateMediaListModal";
 
@@ -53,6 +54,7 @@ export default function HomeScreen() {
             <TrendingTVShows />
             <TrendingMovies />
             <TrendingAnime />
+            <TrendingBooks />
           </ScrollView>
         </View>
 
