@@ -24,8 +24,9 @@ import useAuthStore from "./components/stores/useAuthStore";
 import AuthStack from "./components/Auth/AuthNavigation";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ListScreen from "./components/screens/ListScreen";
-import { StyleSheet, Text } from "react-native";
+import { Text } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import DiscoverScreen from "./components/screens/DiscoverScreen";
 
 enableScreens();
 const Tab = createBottomTabNavigator();
@@ -39,7 +40,7 @@ export default function App() {
     <NavigationContainer>
       <GestureHandlerRootView style={{ flex: 1 }}>
         <QueryClientProvider client={queryClient}>
-          {user?.email ? ( 
+          {user?.email ? (
             <Tab.Navigator
               screenOptions={({ route }) => ({
                 // Access route information
@@ -53,11 +54,10 @@ export default function App() {
                   if (route.name === "Home") {
                     iconEmoji = "🏠"; // Home emoji
                   } else if (route.name === "List") {
-                    // Assuming you have a ListScreen tab
                     iconEmoji = "📋";
+                  } else if (route.name == "Discover") {
+                    iconEmoji = "🔎";
                   }
-                  // Add more conditions for other tabs
-
                   return (
                     <>
                       <Text style={{ fontSize: size, color: color }}>
@@ -76,6 +76,7 @@ export default function App() {
                 options={{ headerShown: false }}
               />
               <Tab.Screen name="List" component={ListScreen} />
+              <Tab.Screen name="Discover" component={DiscoverScreen} />
             </Tab.Navigator>
           ) : (
             <AuthStack />
