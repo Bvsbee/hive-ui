@@ -1,5 +1,5 @@
 import { Text, TextInput, StyleSheet } from "react-native";
-import { UserModel } from "../../models/user/UserModel";
+import { UserModel } from "../../models/UserModel";
 
 interface ProfileSetupProps {
   newUser: UserModel;

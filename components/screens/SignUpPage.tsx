@@ -12,11 +12,11 @@ import {
   BackHandler,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { UserModel } from "../../models/user/UserModel";
+import { UserModel } from "../../models/UserModel";
 import AccountInfo from "../AccountCreation/AccountInfo";
 import ProfileSetup from "../AccountCreation/ProfileSetup";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { AuthStackParamList } from "../../models/user/Navigation";
+import { AuthStackParamList } from "../../models/Navigation";
 import { useCreateUser } from "../../services/authService";
 
 export default function SignUpPage() {

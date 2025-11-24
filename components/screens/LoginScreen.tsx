@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { AuthStackParamList } from "../../models/user/Navigation";
+import { AuthStackParamList } from "../../models/Navigation";
 import { useLoginUser } from "../../services/authService";
 
 export default function LoginScreen() {

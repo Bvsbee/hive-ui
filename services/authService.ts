@@ -1,6 +1,6 @@
 // services/authService.ts
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { UserModel } from "../models/user/UserModel";
+import { UserModel } from "../models/UserModel";
 import hiveAPI from "./hiveAPI";
 import useAuthStore from "../components/stores/useAuthStore";
 
@@ -20,7 +20,7 @@ const loginUser = async (email: string, password?: string) => {
   if (email && password) {
     const { data } = await hiveAPI.post("auth/login", payload);
 
-    localStorage.setItem("token", data.access_token);
+    // localStorage.setItem("token", data.access_token);
 
     return data;
   }
