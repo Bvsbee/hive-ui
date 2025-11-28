@@ -39,3 +39,17 @@ export const useCreateList = () => {
         },
     })};
 
+// fetch fucntion to fet recently added 
+export const fetchRecentlyAddedMedia = async (userGuid: string) => {
+  const response = await hiveAPI.get(`/list/recentMedia/${userGuid}`);
+  return response.data;
+};
+
+// hook to fetch recently added media
+export const useFetchRecentlyAddedMedia = (userGuid: string) => {
+  return useQuery({
+    queryKey: ["recentMedia", userGuid],
+    queryFn: () => fetchRecentlyAddedMedia(userGuid!),
+    enabled: !!userGuid,
+  });
+};
