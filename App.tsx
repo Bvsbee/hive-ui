@@ -55,8 +55,6 @@ export default function App() {
                     iconEmoji = "🏠"; // Home emoji
                   } else if (route.name === "List") {
                     iconEmoji = "📋";
-                  } else if (route.name == "Discover") {
-                    iconEmoji = "🔎";
                   }
                   return (
                     <>
@@ -76,7 +74,6 @@ export default function App() {
                 options={{ headerShown: false }}
               />
               <Tab.Screen name="List" component={ListScreen} />
-              <Tab.Screen name="Discover" component={DiscoverScreen} />
             </Tab.Navigator>
           ) : (
             <AuthStack />
