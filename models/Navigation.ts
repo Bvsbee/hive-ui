@@ -5,3 +5,8 @@ export type AuthStackParamList = {
   Home: undefined;
   List: undefined;
 };
+
+export type ListStackParamList = {
+  ListScreen: undefined;
+  ListDetailScreen: { listGuid: string; listName: string };
+};

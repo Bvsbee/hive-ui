@@ -26,7 +26,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ListScreen from "./components/screens/ListScreen";
 import { Text } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import DiscoverScreen from "./components/screens/DiscoverScreen";
+import ListNavigation from "./components/navigation/ListNavigation";
 
 enableScreens();
 const Tab = createBottomTabNavigator();
@@ -73,7 +73,8 @@ export default function App() {
                 component={HomeScreen}
                 options={{ headerShown: false }}
               />
-              <Tab.Screen name="List" component={ListScreen} />
+             {/* <Tab.Screen name="List" component={ListScreen} /> */}
+              <Tab.Screen name="List" component={ListNavigation} />
             </Tab.Navigator>
           ) : (
             <AuthStack />

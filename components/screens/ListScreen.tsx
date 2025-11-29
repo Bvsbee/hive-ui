@@ -15,15 +15,15 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { AuthStackParamList } from "../../models/Navigation";
-import { useLoginUser } from "../../services/authService";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { ListStackParamList } from "../../models/Navigation";
 import useAuthStore from "../stores/useAuthStore";
 import { useFetchRecentlyAddedMedia, useFetchUserLists } from "../../services/listService";
 import CreateMediaListModal from "../CreateList/CreateMediaListModal";
 
 export default function ListScreen() {
 
-  const navigation = useNavigation<NavigationProp<AuthStackParamList>>();
+  //const navigation = useNavigation<NavigationProp<AuthStackParamList>>();
+  const navigation = useNavigation<NavigationProp<ListStackParamList>>();
   const user = useAuthStore((state) => state.user);
   const { data: lists, isLoading } = useFetchUserLists(user?.guid);
   const{data: recentMedia, isLoading: isLoadingRecent} = useFetchRecentlyAddedMedia(user?.guid);
@@ -136,9 +136,14 @@ export default function ListScreen() {
                   key={list.guid}
                   style={styles.listItem}
                   onPress={() => {
+                    navigation.navigate("ListDetailScreen", {
+                      listGuid: list.guid,
+                      listName: list.name,
+                    });
+                  }}
                     // nav to list detail modal
                     
-                  }}
+                  
                 >
                   <View
                     style={{
