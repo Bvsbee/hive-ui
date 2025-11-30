@@ -55,3 +55,21 @@ export const getYear = (item: any) => {
         //add anime and books
 
     };
+
+    //get ratings for media items
+export const getRating = (item: any) => {
+    const media = item.media;
+    const mediaType = media.mediaType;
+
+    if (mediaType === "MOVIE" && media.movieDetails?.rating) {
+        return media.movieDetails.rating;
+        }
+        //TV show
+    if (mediaType === "TV" && media.tvDetails?.rating) {
+        return media.tvDetails.rating;
+        }
+        //add anime books doesnt have ratings
+    if (mediaType === "ANIME" && media.animeDetails?.rating) {
+        return media.animeDetails.averageScore/10; //convert to 10 point scale anilist is 100 point
+        }
+    };

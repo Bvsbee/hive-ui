@@ -13,7 +13,7 @@ import { useRoute, RouteProp } from "@react-navigation/native";
 import { ListStackParamList } from "../../models/Navigation";
 import useAuthStore from "../stores/useAuthStore";
 import { useFetchUserLists } from "../../services/listService";
-import {getImageUrl,getMediaTypeLabel, getYear} from "../../services/mediaHelper";
+import {getImageUrl,getMediaTypeLabel, getYear, getRating} from "../../services/mediaHelper";
 
 
 type ListDetailScreenProps = RouteProp<ListStackParamList, "ListDetailScreen">;
@@ -56,6 +56,7 @@ export default function ListDetailScreen() {
           listItems.map((item: any) => {
             const imageUrl = getImageUrl(item);
             const mediaTypeLabel = getMediaTypeLabel(item);
+            const rating = getRating(item);
 
             return (
               <View key ={item.guid} style={styles.mediaCard}>
@@ -82,6 +83,25 @@ export default function ListDetailScreen() {
 
                   </Text>
 
+                  {/* ratings */}
+                   {rating && (
+                    <View style = {{flexDirection: "row", alignItems: "center", marginBottom: 8}}>
+                      <Text style ={styles.rating}>★ {rating.toFixed(1)}</Text>
+
+                    </View>
+                   )}
+
+                </View>
+                {/* rightside date added */}
+                <View style ={styles.rightSide}>
+                  
+                  <Text style={{ color: "#888", fontSize: 12 }}>
+                      {item.createdAt ? new Date(item.createdAt).toLocaleDateString(
+                        undefined,{
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric'}) : ""}
+                  </Text>
                 </View>
 
                   
@@ -92,7 +112,7 @@ export default function ListDetailScreen() {
           })
         ) : (
           <View style={{ padding: 20, alignItems: "center" }}>
-            <Text style={{ color: "#FFF" }}>No items in this list</Text>
+            <Text style={{ color: "#FFF", fontWeight:"bold" }}>No items in this list</Text>
           </View>
         )}
       </ScrollView>
@@ -151,5 +171,15 @@ const styles = StyleSheet.create({
     color: "#FFF",
     marginBottom: 6,
   },
+  rightSide: {
+    justifyContent: "flex-end",
+    //alignItems: "flex-end",
+    marginLeft: 10,
+  },
+  rating:{
+    fontSize: 14,
+    color: "#FFD700",
+    marginRight: 10,
+  }
 
 });
