@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useFetchBooks } from "../../services/mediaService";
+import { useFetchUserLists } from "../../services/listService";
+import useAuthStore from "../stores/useAuthStore"
 import {
     FlatList,
     Image,
@@ -13,24 +15,31 @@ import {
 
 
 const TrendingBooks = () => {
-    const [selectedShow, setSelectedShow] = useState<any>(null);
+    const [selectedBook, setSelectedBook] = useState<any>(null);
     const [modalVisible, setModalVisible] = useState(false);
     const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
     const [selectedList, setSelectedList] = useState<string>("");
+    const user = useAuthStore((state:any) => state.user);
+
+    const userGuid = user?.guid;
 
     const { data: books, isLoading, isError, error } = useFetchBooks();
+    const {data : userLists, isLoading: listsLoading } = useFetchUserLists(userGuid ?? "");
 
     if (isLoading)
         return <Text style={{ color: "white" }}>Loading Books...</Text>;
     if (error) return <Text>Error loading Books</Text>;
+    console.log(user );
 
     return (
         <>
             <Text
                 style={{ fontSize: 18, fontWeight: "bold", margin: 10, color: "white" }}
             >
-                ⚡ Trending Books
+                📚 Trending Books
+                
             </Text>
+            
             <FlatList
                 data={books}
                 horizontal
@@ -40,7 +49,7 @@ const TrendingBooks = () => {
                     <>
                         <TouchableOpacity
                             onPress={(e) => {
-                                setSelectedShow(item);
+                                setSelectedBook(item);
                                 setModalVisible(true);
                             }}
                             style={styles.card}
@@ -60,6 +69,7 @@ const TrendingBooks = () => {
                         >
                             {/* CLOSE MODAL WHEN CLICKING OUTSIDE */}
                             <TouchableOpacity
+                            
                                 activeOpacity={1}
                                 style={styles.modalOverlay}
                                 onPress={() => {
@@ -69,31 +79,55 @@ const TrendingBooks = () => {
                             >
                                 <TouchableWithoutFeedback onPress={() => setDropdownOpen(false)}>
                                     <View style={styles.modalSheet}>
-                                        {/* Poster */}
-                                        {selectedShow && (
-                                            <Image
-                                                source={{ uri: selectedShow.coverImage.medium }}
-                                                style={styles.modalPoster}
-                                            />
-                                        )}
+                                        {selectedBook && (
+                                            <Text style={styles.bookTitle}>{selectedBook.title}</Text>
+                                        )} 
+
+                                        {/* ROW: Poster Left --- Description Right */}
+                                        <View style={styles.infoRow}>
+                                            {selectedBook && (
+                                                <Image
+                                                    source={{ uri: selectedBook.book_image }}
+                                                    style={styles.leftPoster}
+                                                />
+                                            )}
+                                            
+
+                                            <View style={styles.rightInfo}>
+                                                {selectedBook && (
+                                                    <Text style={styles.bookDescription}>
+                                                        {selectedBook.author}
+                                                    </Text>
+                                                )}
+                                            </View>
+                                            <View style={styles.rightInfo}>
+                                                {selectedBook && (
+                                                    <Text style={styles.bookDescription}>
+                                                        {selectedBook.description}
+                                                    </Text>
+                                                )}
+                                            </View>
+                                        </View>
+
+                                        {/* DROPDOWN + Add to List BELOW the row */}
                                         <View style={styles.dropdownWrapper}>
                                             <Text style={styles.pickerLabel}>Add to List</Text>
 
                                             <TouchableOpacity
                                                 style={styles.dropdownBox}
                                                 onPress={() => setDropdownOpen(!dropdownOpen)}
-                                                activeOpacity={0.8}
                                             >
                                                 <Text style={{ color: "#FFF" }}>
                                                     {selectedList
-                                                        ? mockLists.find((l) => l.id === selectedList)?.name
+                                                        ? userLists?.find((l: any) => l.id === selectedList)?.name
                                                         : "Select a list..."}
+
                                                 </Text>
                                             </TouchableOpacity>
 
-                                            {dropdownOpen && (
+                                            {dropdownOpen && userLists?.length > 0 && (
                                                 <View style={styles.dropdownMenu}>
-                                                    {mockLists.map((list) => (
+                                                    {userLists.map((list: any) => (
                                                         <TouchableOpacity
                                                             key={list.id}
                                                             style={styles.dropdownItem}
@@ -102,6 +136,7 @@ const TrendingBooks = () => {
                                                                 setDropdownOpen(false);
                                                             }}
                                                         >
+                                                        
                                                             <Text style={{ color: "#FFF" }}>{list.name}</Text>
                                                         </TouchableOpacity>
                                                     ))}
@@ -112,11 +147,8 @@ const TrendingBooks = () => {
                                         <TouchableOpacity
                                             style={styles.addButton}
                                             onPress={() => {
-                                                if (!selectedList) {
-                                                    console.log("No list selected");
-                                                    return;
-                                                }
-                                                console.log("Added to list");
+                                                if (!selectedList) return;
+                                                console.log("Added");
                                                 setModalVisible(false);
                                             }}
                                         >
@@ -130,6 +162,7 @@ const TrendingBooks = () => {
                                             <Text style={styles.closeText}>Close</Text>
                                         </TouchableOpacity>
                                     </View>
+
                                 </TouchableWithoutFeedback>
                             </TouchableOpacity>
                         </Modal>
@@ -178,9 +211,10 @@ const styles = StyleSheet.create({
 
     modalPoster: {
         width: 130,
-        height: 190,
-        borderRadius: 10,
+        height: 200,
+        borderRadius: 12,
         marginBottom: 12,
+        
     },
 
     modalTitle: {
@@ -249,4 +283,41 @@ const styles = StyleSheet.create({
         color: "#FFF",
         fontSize: 15,
     },
+   
+    infoRow: {
+        flexDirection: "row",
+        alignItems: "flex-start",
+        width: "100%",
+        marginTop: 10,
+        marginBottom: 20,
+        gap: 16,
+    },
+
+    leftPoster: {
+        width: 130,
+        height: 200,
+        borderRadius: 12,
+        backgroundColor: "#273e79",
+    },
+
+    rightInfo: {
+        flex: 1,
+        justifyContent: "flex-start",
+    },
+
+    bookTitle: {
+        fontSize: 20,
+        fontWeight: "bold",
+        color: "#ED3838",
+        textAlign: "center",
+        marginBottom: 15,
+    },
+
+    bookDescription: {
+        fontSize: 15,
+        color: "#EEE",
+        lineHeight: 20,
+    },
+
+
 });

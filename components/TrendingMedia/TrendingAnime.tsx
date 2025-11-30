@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useFetchAnime } from "../../services/mediaService";
+import { useFetchUserLists } from "../../services/listService";
+import useAuthStore from "../stores/useAuthStore"
 import {
   FlatList,
   Image,
@@ -16,8 +18,11 @@ const TrendingAnime = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
   const [selectedList, setSelectedList] = useState<string>("");
-
+  const user = useAuthStore((state: any) => state.user);
+  const userGuid = user?.guid;
   const { data: anime, isLoading, isError, error } = useFetchAnime();
+  const {data : userLists, isLoading: listsLoading } = useFetchUserLists(userGuid ?? "");
+  const stripHtml = (html: string) => html.replace(/<[^>]*>/g, "");
 
   if (isLoading)
     return <Text style={{ color: "white" }}>Loading Anime...</Text>;
@@ -66,33 +71,61 @@ const TrendingAnime = () => {
                   setDropdownOpen(false);
                 }}
               >
-                <TouchableWithoutFeedback onPress={() => setDropdownOpen(false)}>
+                <TouchableWithoutFeedback
+                  onPress={() => setDropdownOpen(false)}
+                >
                   <View style={styles.modalSheet}>
-                    {/* Poster */}
                     {selectedShow && (
-                      <Image
-                        source={{ uri: selectedShow.coverImage.medium }}
-                        style={styles.modalPoster}
-                      />
+                      <Text style={styles.bookTitle}>
+                        {selectedShow.title.english ?? selectedShow.title.romaji}                        </Text>
                     )}
+
+                    {/* ROW: Poster Left --- Description Right */}
+                    <View style={styles.infoRow}>
+                      {selectedShow && (
+                        <Image
+                          source={{
+                            uri: `${selectedShow.coverImage.medium}`,
+                          }}
+                          style={styles.leftPoster}
+                        />
+                      )}
+
+                      <View style={styles.rightInfo}>
+                        {selectedShow && (
+                          <Text style={styles.bookDescription}>
+                            ⭐{selectedShow.averageScore}/100
+                          </Text>
+                        )}
+                      </View>
+                      <View style={styles.rightInfo}>
+                        {selectedShow && (
+                          <Text style={styles.bookDescription}>
+                            {stripHtml(selectedShow.description)}
+                          </Text>
+                        )}
+                      </View>
+                    </View>
+
+                    {/* DROPDOWN + Add to List BELOW the row */}
                     <View style={styles.dropdownWrapper}>
                       <Text style={styles.pickerLabel}>Add to List</Text>
 
                       <TouchableOpacity
                         style={styles.dropdownBox}
                         onPress={() => setDropdownOpen(!dropdownOpen)}
-                        activeOpacity={0.8}
                       >
                         <Text style={{ color: "#FFF" }}>
                           {selectedList
-                            ? mockLists.find((l) => l.id === selectedList)?.name
+                            ? userLists?.find((l: any) => l.id === selectedList)
+                                ?.name
                             : "Select a list..."}
                         </Text>
                       </TouchableOpacity>
 
-                      {dropdownOpen && (
+                      {dropdownOpen && userLists?.length > 0 && (
                         <View style={styles.dropdownMenu}>
-                          {mockLists.map((list) => (
+                          {userLists.map((list: any) => (
                             <TouchableOpacity
                               key={list.id}
                               style={styles.dropdownItem}
@@ -111,11 +144,8 @@ const TrendingAnime = () => {
                     <TouchableOpacity
                       style={styles.addButton}
                       onPress={() => {
-                        if (!selectedList) {
-                          console.log("No list selected");
-                          return;
-                        }
-                        console.log("Added to list");
+                        if (!selectedList) return;
+                        console.log("Added");
                         setModalVisible(false);
                       }}
                     >
@@ -132,7 +162,6 @@ const TrendingAnime = () => {
                 </TouchableWithoutFeedback>
               </TouchableOpacity>
             </Modal>
-
           </>
         )}
       />
@@ -248,5 +277,39 @@ const styles = StyleSheet.create({
     color: "#FFF",
     fontSize: 15,
   },
-});
+  infoRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    width: "100%",
+    marginTop: 10,
+    marginBottom: 20,
+    gap: 16,
+  },
 
+  leftPoster: {
+    width: 130,
+    height: 200,
+    borderRadius: 12,
+    backgroundColor: "#273e79",
+  },
+
+  rightInfo: {
+    flex: 1,
+    justifyContent: "flex-start",
+  },
+
+  bookTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#ED3838",
+    textAlign: "center",
+    marginBottom: 15,
+  },
+
+  bookDescription: {
+    fontSize: 15,
+    color: "#EEE",
+    lineHeight: 20,
+  },
+
+});
