@@ -15,17 +15,44 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { AuthStackParamList } from "../../models/Navigation";
-import { useLoginUser } from "../../services/authService";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { ListStackParamList } from "../../models/Navigation";
 import useAuthStore from "../stores/useAuthStore";
-import { useFetchUserLists } from "../../services/listService";
+import { useFetchRecentlyAddedMedia, useFetchUserLists } from "../../services/listService";
 import CreateMediaListModal from "../CreateList/CreateMediaListModal";
 
 export default function ListScreen() {
 
-  const navigation = useNavigation<NavigationProp<AuthStackParamList>>();
+  //const navigation = useNavigation<NavigationProp<AuthStackParamList>>();
+  const navigation = useNavigation<NavigationProp<ListStackParamList>>();
   const user = useAuthStore((state) => state.user);
   const { data: lists, isLoading } = useFetchUserLists(user?.guid);
+  const{data: recentMedia, isLoading: isLoadingRecent} = useFetchRecentlyAddedMedia(user?.guid);
+
+  const baseUrl = "https://image.tmdb.org/t/p/w500/";
+
+  // get image url based on media type
+  const getImageUrl = (item: any) => {
+    const media = item.media;
+    const mediaType = media.mediaType;
+
+    // movies and tv show
+    if (mediaType === "MOVIE"  && media.movieDetails){
+      return `${baseUrl}${media.movieDetails.posterPath}`;
+    }
+    if (mediaType === "TV" && media.tvDetails){
+      return `${baseUrl}${media.tvDetails.postPath}`;
+    }
+    // anime uses direct url
+    if (mediaType === "ANIME" && media.animeDetails){
+      return media.animeDetails.coverImageUrl;
+    }
+    // book uses direct url
+    if (mediaType === "BOOK" && media.bookDetails){
+      return media.bookDetails.bookImageUrl;
+    }
+    return null;
+  };
+
 
   return (
     
@@ -51,43 +78,48 @@ export default function ListScreen() {
              showsHorizontalScrollIndicator={false} 
              style={{paddingLeft: 20}}
              >
-                {/* style recent cards show most recently added iten from each category */}        
-                <View style={styles.recentCard}>
-                    {/* sample image replace with users most recent added movie */}
-                    <Image
-                        source={{uri: 'https://www.themoviedb.org/t/p/w1280/ulzhLuWrPK07P1YkdWQLZnQh1JL.jpg'}}
-                        style={styles.recentImage}
-                    />
-                    <Text style={{color: "#FFF", marginTop: 8}}>Movie</Text>
-                </View>
+                       
                 
-
-                <View style={styles.recentCard}>
-                    {/* sample image replace with users most recent added show */}
-                    <Image
-                        source={{uri: 'https://www.themoviedb.org/t/p/w1280/rOYLWCdAifpUtPlTf1WHxyaxeMt.jpg'}}
-                        style={styles.recentImage}
-                    />
-                    <Text style={{color: "#FFF", marginTop: 8}}>TV Show</Text>
-                </View>
-                
-                <View style={styles.recentCard}>
-                    {/* sample image replace with users most recent added anime */}
-                    <Image
-                        source={{uri: 'https://cdn.myanimelist.net/images/anime/1168/148347.jpg'}}
-                        style={styles.recentImage}
-                    />
-                    <Text style={{color: "#FFF", marginTop: 8}}>Anime</Text>
-                </View>
-
-                <View style={styles.recentCard}>
-                    {/* sample image replace with users most recent added book */}
-                    <Image
-                        source={{uri: 'https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1531891848i/11.jpg'}}
-                        style={styles.recentImage}
-                    />
-                    <Text style={{color: "#FFF", marginTop: 8}}>Anime</Text>
-                </View>    
+                  {isLoadingRecent ? (
+                  <View style={styles.loadingContainer}>
+                    <ActivityIndicator size="small" color="#FFD700" />
+                  </View>
+                ) : recentMedia && recentMedia.length > 0 ? (
+                  recentMedia.map((item: any, index: number) => {
+                    const imageUrl = getImageUrl(item);
+                    const mediaTitle = item.media.title;
+                    
+                    return (
+                      <View key={item.guid || index} style={styles.recentCard}>
+                        {imageUrl ? (
+                          <Image
+                            source={{
+                              uri: imageUrl,
+                            }}
+                            style={styles.recentImage}
+                          />
+                        ) : (
+                          <View style={[styles.recentImage, styles.placeholder]}>
+                            <Text style={{ color: "#FFF", fontSize: 12 }}>No Image</Text>
+                          </View>
+                        )}
+                        <Text 
+                          style={styles.recentMediaTitle}
+                          numberOfLines={2}
+                          
+                        >
+                          {mediaTitle}
+                        </Text>
+                      </View>
+                    );
+                  })
+                ) : (
+                  <View style={{ padding: 20,alignItems:"center"} }>
+                    <Text style={{ color: "#f9f6deff", fontSize: 14 }}>
+                      No recently added items
+                    </Text>
+                  </View>
+                )} 
             </ScrollView>
             </View>
 
@@ -104,9 +136,14 @@ export default function ListScreen() {
                   key={list.guid}
                   style={styles.listItem}
                   onPress={() => {
+                    navigation.navigate("ListDetailScreen", {
+                      listGuid: list.guid,
+                      listName: list.name,
+                    });
+                  }}
                     // nav to list detail modal
                     
-                  }}
+                  
                 >
                   <View
                     style={{
@@ -222,5 +259,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: "center",
   },
-
+  placeholder: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  emptyRecentContainer: {
+    padding: 40,
+    alignItems: "center",
+  },
+  recentMediaTitle: {
+    color: "#FFF",
+    marginTop: 8,
+    fontSize: 12,
+    textAlign: "center",
+    width: 120,
+  },
 });
