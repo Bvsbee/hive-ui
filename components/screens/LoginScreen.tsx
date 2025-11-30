@@ -30,7 +30,13 @@ export default function LoginScreen() {
       return;
     }
 
-    mutate({ email, password });
+    mutate({ email, password },
+      { onError: (error: any) => {
+        Alert.alert(
+          "Invalid Email or Password"
+        );
+      }},
+    );
   };
 
   return (

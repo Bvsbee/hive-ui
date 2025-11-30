@@ -34,20 +34,21 @@ export default function ListDetailScreen() {
   return (
     <LinearGradient colors={["#17192C", "#273e79ff"]} style={{flex: 1}}>
       <SafeAreaView style={styles.container}>
+        <ScrollView 
+        style={{flex: 1}}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollList}
+
+
+      > 
        {/* //list name */}
         <View style={styles.header}>
           <Text style={styles.listname}>{listName}</Text>
         </View>
       
 
-      {/* list items with vertical scroll */}
-      <ScrollView 
-        style={{flex: 1}}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollList}
-
-
-      >        {/* list items */}
+        {/* list items with vertical scroll */}
+       
         {isLoading ? (
           <View style={styles.loadingContainer}>
             <Text style={{color: "#FFF"}}>Loading...</Text>
