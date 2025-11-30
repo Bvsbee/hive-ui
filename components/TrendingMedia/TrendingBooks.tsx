@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useFetchBooks } from "../../services/mediaService";
 import { useFetchUserLists } from "../../services/listService";
 import useAuthStore from "../stores/useAuthStore"
+import { normalizeMedia, useAddItemToList } from "../../services/listService";
+
 import {
     FlatList,
     Image,
@@ -20,6 +22,7 @@ const TrendingBooks = () => {
     const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
     const [selectedList, setSelectedList] = useState<string>("");
     const user = useAuthStore((state: any) => state.user);
+    const addItemMutation = useAddItemToList();
 
     const userGuid = user?.guid;
 
@@ -30,6 +33,28 @@ const TrendingBooks = () => {
         return <Text style={{ color: "white" }}>Loading Books...</Text>;
     if (error) return <Text>Error loading Books</Text>;
     console.log(user);
+    const handleAddBookToList = () => {
+        if (!selectedList || !selectedBook) return;
+
+        try {
+            const payload = normalizeMedia(selectedBook, selectedList);
+
+            console.log("BOOK PAYLOAD:", payload);
+
+            addItemMutation.mutate(payload, {
+                onSuccess: () => {
+                    console.log("Book added!");
+                    setModalVisible(false);
+                },
+                onError: (err) => {
+                    console.error("Failed to add book:", err);
+                }
+            });
+        } catch (err) {
+            console.error("Normalization error:", err);
+        }
+    };
+
 
     return (
         <>
@@ -118,7 +143,7 @@ const TrendingBooks = () => {
                                             >
                                                 <Text style={{ color: "#FFF" }}>
                                                     {selectedList
-                                                        ? userLists?.find((l: any) => l.id === selectedList)?.name
+                                                        ? userLists?.find((l: any) => l.guid === selectedList)?.name
                                                         : "Select a list..."}
 
                                                 </Text>
@@ -128,10 +153,10 @@ const TrendingBooks = () => {
                                                 <View style={styles.dropdownMenu}>
                                                     {userLists.map((list: any) => (
                                                         <TouchableOpacity
-                                                            key={list.id}
+                                                            key={list.guid}
                                                             style={styles.dropdownItem}
                                                             onPress={() => {
-                                                                setSelectedList(list.id);
+                                                                setSelectedList(list.guid);
                                                                 setDropdownOpen(false);
                                                             }}
                                                         >
@@ -143,16 +168,10 @@ const TrendingBooks = () => {
                                             )}
                                         </View>
 
-                                        <TouchableOpacity
-                                            style={styles.addButton}
-                                            onPress={() => {
-                                                if (!selectedList) return;
-                                                console.log("Added");
-                                                setModalVisible(false);
-                                            }}
-                                        >
+                                        <TouchableOpacity style={styles.addButton} onPress={handleAddBookToList}>
                                             <Text style={styles.addButtonText}>Add to List</Text>
                                         </TouchableOpacity>
+
 
                                         <TouchableOpacity
                                             onPress={() => setModalVisible(false)}

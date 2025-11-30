@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useFetchAnime } from "../../services/mediaService";
-import { useFetchUserLists } from "../../services/listService";
+import { useFetchUserLists, normalizeMedia, useAddItemToList } from "../../services/listService";
 import useAuthStore from "../stores/useAuthStore"
 import {
   FlatList,
@@ -13,6 +13,9 @@ import {
   View,
 } from "react-native";
 
+
+
+
 const TrendingAnime = () => {
   const [selectedShow, setSelectedShow] = useState<any>(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -23,10 +26,42 @@ const TrendingAnime = () => {
   const { data: anime, isLoading, isError, error } = useFetchAnime();
   const {data : userLists, isLoading: listsLoading } = useFetchUserLists(userGuid ?? "");
   const stripHtml = (html: string) => html.replace(/<[^>]*>/g, "");
+  const addItemMutation = useAddItemToList();
 
   if (isLoading)
     return <Text style={{ color: "white" }}>Loading Anime...</Text>;
   if (error) return <Text>Error loading Anime</Text>;
+
+  
+  const handleAddToList = () => {
+    if (!selectedList || !selectedShow) return;
+
+    try {
+      const payload = normalizeMedia(
+        {
+          ...selectedShow,
+          mediaType: "ANIME",
+          description: stripHtml(selectedShow.description)
+        },
+        selectedList
+      );
+
+      console.log("Sending payload:", payload);
+
+      addItemMutation.mutate(payload, {
+        onSuccess: () => {
+          console.log("Successfully added!");
+          setModalVisible(false);
+        },
+        onError: (err) => {
+          console.error("Failed to add:", err);
+        },
+      });
+    } catch (err) {
+      console.error("Normalization error:", err);
+    }
+  };
+
 
   return (
     <>
@@ -117,7 +152,7 @@ const TrendingAnime = () => {
                       >
                         <Text style={{ color: "#FFF" }}>
                           {selectedList
-                            ? userLists?.find((l: any) => l.id === selectedList)
+                            ? userLists?.find((l: any) => l.guid === selectedList)
                                 ?.name
                             : "Select a list..."}
                         </Text>
@@ -127,10 +162,10 @@ const TrendingAnime = () => {
                         <View style={styles.dropdownMenu}>
                           {userLists.map((list: any) => (
                             <TouchableOpacity
-                              key={list.id}
+                              key={list.guid}
                               style={styles.dropdownItem}
                               onPress={() => {
-                                setSelectedList(list.id);
+                                setSelectedList(list.guid);
                                 setDropdownOpen(false);
                               }}
                             >
@@ -143,14 +178,11 @@ const TrendingAnime = () => {
 
                     <TouchableOpacity
                       style={styles.addButton}
-                      onPress={() => {
-                        if (!selectedList) return;
-                        console.log("Added");
-                        setModalVisible(false);
-                      }}
+                      onPress={handleAddToList}
                     >
                       <Text style={styles.addButtonText}>Add to List</Text>
                     </TouchableOpacity>
+
 
                     <TouchableOpacity
                       onPress={() => setModalVisible(false)}
