@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import useAuthStore from "../stores/useAuthStore";
 import { normalizeMedia, useAddItemToList } from "../../services/listService";
+import { ScrollView } from "react-native-gesture-handler";
 
 
 const TrendingMovies = () => {
@@ -117,17 +118,18 @@ const TrendingMovies = () => {
                         {selectedShow && (
                           <Text style={styles.ratingText}>
                             ★ {selectedShow.rating.toFixed(1)}
-                            {selectedShow.firstAirDate && (
-                              ` • ${new Date(selectedShow.firstAirDate).getFullYear()}`
+                            {selectedShow.releaseDate && (
+                              ` • ${new Date(selectedShow.releaseDate).getFullYear()}`
                             )}
                           </Text>
                         )}
-
+                        <ScrollView style={{flex:1}} showsVerticalScrollIndicator={false}>
                         {selectedShow && (
                           <Text style={styles.bookDescription}>
                             {selectedShow.overview}
                           </Text>
                         )}
+                        </ScrollView>
                       </View>
                     </View>
 
@@ -149,6 +151,7 @@ const TrendingMovies = () => {
 
                       {dropdownOpen && userLists?.length > 0 && (
                         <View style={styles.dropdownMenu}>
+                          <ScrollView style={{maxHeight: 150}}>
                           {userLists.map((list: any) => (
                             <TouchableOpacity
                               key={list.guid}
@@ -162,6 +165,7 @@ const TrendingMovies = () => {
                               <Text style={{ color: "#FFF" }}>{list.name}</Text>
                             </TouchableOpacity>
                           ))}
+                          </ScrollView>
                         </View>
                       )}
                     </View>
@@ -217,7 +221,7 @@ const styles = StyleSheet.create({
 
   modalSheet: {
     backgroundColor: "#1b1d2e",
-    height: "80%", // ⬅️ half-screen modal
+    height: "60%", // ⬅️ half-screen modal
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     padding: 20,

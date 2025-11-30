@@ -14,6 +14,7 @@ import {
 import useAuthStore from "../stores/useAuthStore"
 import { getYear } from "../../services/mediaHelper";
 import { normalizeMedia, useAddItemToList } from "../../services/listService";
+import { ScrollView } from "react-native-gesture-handler";
 
 
 const TrendingTVShows = () => {
@@ -125,12 +126,13 @@ const TrendingTVShows = () => {
                             )}
                           </Text>
                         )}
-
+                        <ScrollView style={{flex:1}} showsVerticalScrollIndicator={false}>
                         {selectedShow && (
                           <Text style={styles.bookDescription}>
                             {selectedShow.overview}
                           </Text>
                         )}
+                        </ScrollView>
                       </View>
                     </View>
 
@@ -152,6 +154,7 @@ const TrendingTVShows = () => {
 
                       {dropdownOpen && userLists?.length > 0 && (
                         <View style={styles.dropdownMenu}>
+                          <ScrollView style={{maxHeight: 150}}>
                           {userLists.map((list: any) => (
                             <TouchableOpacity
                               key={list.guid}
@@ -165,6 +168,7 @@ const TrendingTVShows = () => {
                               <Text style={{ color: "#FFF" }}>{list.name}</Text>
                             </TouchableOpacity>
                           ))}
+                          </ScrollView>
                         </View>
                       )}
                     </View>
@@ -221,7 +225,7 @@ const styles = StyleSheet.create({
 
   modalSheet: {
     backgroundColor: "#1b1d2e",
-    height: "80%", // ⬅️ half-screen modal
+    height: "60%", // ⬅️ half-screen modal
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     padding: 20,

@@ -56,9 +56,10 @@ export const getYear = (item: any) => {
     if (mediaType === "ANIME" && media.animeDetails?.startDate) {
         return new Date(media.animeDetails.startDate).getFullYear();
         }
-    if (mediaType === "BOOK" && media.bookDetails?.publishedDate) {
-        return new Date(media.bookDetails.publishedDate).getFullYear();
-        }
+        // no publish date for books from api
+    // if (mediaType === "BOOK" && media.bookDetails?.publishedDate) {
+    //     return new Date(media.bookDetails.publishedDate).getFullYear();
+    //     }
 
     };
 
@@ -75,7 +76,7 @@ export const getRating = (item: any) => {
         return media.tvDetails.rating;
         }
         //add anime books doesnt have ratings
-    if (mediaType === "ANIME" && media.animeDetails?.rating) {
+    if (mediaType === "ANIME" && media.animeDetails?.averageScore) {
         return media.animeDetails.averageScore/10; //convert to 10 point scale anilist is 100 point
         }
     };

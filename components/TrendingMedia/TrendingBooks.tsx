@@ -14,6 +14,7 @@ import {
     TouchableWithoutFeedback,
     View,
 } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
 
 
 const TrendingBooks = () => {
@@ -121,15 +122,18 @@ const TrendingBooks = () => {
                                             <View style={styles.rightInfo}>
                                             
                                                 {selectedBook && (
-                                                    <Text style={styles.ratingText}>Author: {selectedBook.author} </Text>
+                                                    <Text style={styles.ratingText}>Author: {selectedBook.author}
+                                                
+                                                   </Text>
                                                 )}
                                         
-
+                                                <ScrollView style = {{flex: 1}} showsVerticalScrollIndicator={false}>
                                                 {selectedBook && (
                                                     <Text style={styles.bookDescription}>
                                                         {selectedBook.description}
                                                     </Text>
                                                 )}
+                                                </ScrollView>
                                             </View>
                                         </View>
 
@@ -151,6 +155,7 @@ const TrendingBooks = () => {
 
                                             {dropdownOpen && userLists?.length > 0 && (
                                                 <View style={styles.dropdownMenu}>
+                                                    <ScrollView style={{maxHeight: 150}}>
                                                     {userLists.map((list: any) => (
                                                         <TouchableOpacity
                                                             key={list.guid}
@@ -164,6 +169,7 @@ const TrendingBooks = () => {
                                                             <Text style={{ color: "#FFF" }}>{list.name}</Text>
                                                         </TouchableOpacity>
                                                     ))}
+                                                    </ScrollView>
                                                 </View>
                                             )}
                                         </View>
@@ -220,7 +226,7 @@ const styles = StyleSheet.create({
 
     modalSheet: {
         backgroundColor: "#1b1d2e",
-        height: "80%", // ⬅️ half-screen modal
+        height: "60%", // ⬅️ half-screen modal
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30,
         padding: 20,

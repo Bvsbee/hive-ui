@@ -12,6 +12,7 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
 
 
 
@@ -116,7 +117,8 @@ const TrendingAnime = () => {
                     )}
 
                     {/* ROW: Poster Left --- Description Right */}
-                    <View style={styles.infoRow}>
+                    <View style={styles.infoRow}> 
+                      {/* <View style={styles.mediaCard}>  */}
                       {selectedShow && (
                         <Image
                           source={{
@@ -126,20 +128,26 @@ const TrendingAnime = () => {
                         />
                       )}
 
+                      
                       <View style={styles.rightInfo}>
                         {selectedShow && (
                           <Text style={styles.ratingText}>
-                            ★{selectedShow.averageScore}/100
+                            ★{selectedShow.averageScore/10}
+                                {/*divide by 10 to scale down anime score from 100  */}
+                              {selectedShow.startDate && (
+                              ` • ${new Date(selectedShow.startDate.year).getFullYear()}`
+                            )}
                           </Text>
                         )}
-                       
+                       <ScrollView style={{flex:1}} showsVerticalScrollIndicator={false}>
                         {selectedShow && (
-                          <Text style={styles.bookDescription}>
+                          <Text style={styles.bookDescription} >
                             {stripHtml(selectedShow.description)}
                           </Text>
                         )}
-
+                      </ScrollView>
                       </View>
+                      {/* </View> */}
                     </View>
 
                     {/* DROPDOWN + Add to List BELOW the row */}
@@ -160,6 +168,7 @@ const TrendingAnime = () => {
 
                       {dropdownOpen && userLists?.length > 0 && (
                         <View style={styles.dropdownMenu}>
+                          <ScrollView style={{maxHeight: 150}}>
                           {userLists.map((list: any) => (
                             <TouchableOpacity
                               key={list.guid}
@@ -172,6 +181,7 @@ const TrendingAnime = () => {
                               <Text style={{ color: "#FFF" }}>{list.name}</Text>
                             </TouchableOpacity>
                           ))}
+                          </ScrollView>
                         </View>
                       )}
                     </View>
@@ -229,7 +239,7 @@ const styles = StyleSheet.create({
 
   modalSheet: {
     backgroundColor: "#1b1d2e",
-    height: "80%", // ⬅️ half-screen modal
+    height: "60%", // ⬅️ half-screen modal
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     padding: 20,
@@ -315,7 +325,7 @@ const styles = StyleSheet.create({
     width: "100%",
     marginTop: 10,
     marginBottom: 20,
-    gap: 16,
+    //gap: 16,
   },
 
   leftPoster: {
@@ -323,6 +333,7 @@ const styles = StyleSheet.create({
     height: 200,
     borderRadius: 12,
     backgroundColor: "#273e79",
+    
   },
 
   rightInfo: {
@@ -344,6 +355,7 @@ const styles = StyleSheet.create({
     color: "#EEE",
     lineHeight: 20,
     textAlign: "left",
+    //maxHeight: 200,
 
   }, ratingText: {
     fontSize: 16,
@@ -351,6 +363,16 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     marginBottom: 12,
   },
+  // mediaCard: {
+  //   flexDirection: "row",
+  //   //backgroundColor: "rgba(255, 255, 255, 0.05)",
+  //   borderRadius: 15,
+  //   padding: 15,
+  //   marginBottom: 15,
+  //   borderWidth: 1,
+  //   borderColor: "rgba(255, 215, 0, 0.2)",
+  // },
+
 
 
 });
