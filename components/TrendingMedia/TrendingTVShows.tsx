@@ -12,6 +12,7 @@ import {
   View,
 } from "react-native";
 import useAuthStore from "../stores/useAuthStore"
+import{getYear} from "../../services/mediaHelper";
 
 
 const TrendingTVShows = () => {
@@ -94,13 +95,14 @@ const TrendingTVShows = () => {
           
                                                       <View style={styles.rightInfo}>
                                                           {selectedShow && (
-                                                              <Text style={styles.bookDescription}>
-                                                              ⭐
-                                                                  {selectedShow.rating}
+                                                              <Text style={styles.ratingText}>
+                                                              ★ {selectedShow.rating.toFixed(1)} 
+                                                              {selectedShow.firstAirDate &&(
+                                                                 ` • ${new Date(selectedShow.firstAirDate).getFullYear()}`
+                                                              )}
                                                               </Text>
                                                           )}
-                                                      </View>
-                                                      <View style={styles.rightInfo}>
+                                                      
                                                           {selectedShow && (
                                                               <Text style={styles.bookDescription}>
                                                               {selectedShow.overview}
@@ -202,7 +204,7 @@ const styles = StyleSheet.create({
 
   modalSheet: {
     backgroundColor: "#1b1d2e",
-    height: "50%", // ⬅️ half-screen modal
+    height: "80%", // ⬅️ half-screen modal
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     padding: 20,
@@ -301,6 +303,7 @@ const styles = StyleSheet.create({
   rightInfo: {
     flex: 1,
     justifyContent: "flex-start",
+    paddingLeft: 10,
   },
 
   bookTitle: {
@@ -315,6 +318,13 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: "#EEE",
     lineHeight: 20,
+    textAlign: "left",
+
+  },ratingText: {
+    fontSize: 16,
+    color: "#FFD700",
+    fontWeight: "600",
+    marginBottom: 12,
   },
 
 

@@ -53,6 +53,12 @@ export const getYear = (item: any) => {
         return new Date(media.tvDetails.firstAirDate).getFullYear();
         }
         //add anime and books
+    if (mediaType === "ANIME" && media.animeDetails?.startDate) {
+        return new Date(media.animeDetails.startDate).getFullYear();
+        }
+    if (mediaType === "BOOK" && media.bookDetails?.publishedDate) {
+        return new Date(media.bookDetails.publishedDate).getFullYear();
+        }
 
     };
 
