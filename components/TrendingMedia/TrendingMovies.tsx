@@ -57,110 +57,115 @@ const TrendingMovies = () => {
                 style={styles.poster}
               />
             </TouchableOpacity>
-            <Modal
-              visible={modalVisible}
-              transparent
-              animationType="slide"
-              onRequestClose={() => setModalVisible(false)}
-            >
-              {/* CLOSE MODAL WHEN CLICKING OUTSIDE */}
-              <TouchableOpacity
-                activeOpacity={1}
-                style={styles.modalOverlay}
-                onPress={() => {
-                  setModalVisible(false);
-                  setDropdownOpen(false);
-                }}
-              >
-                <TouchableWithoutFeedback
-                  onPress={() => setDropdownOpen(false)}
-                >
-                  <View style={styles.modalSheet}>
-                    {selectedShow && (
-                      <Text style={styles.bookTitle}>{selectedShow.title}</Text>
-                    )}
-
-                    {/* ROW: Poster Left --- Description Right */}
-                    <View style={styles.infoRow}>
-                      {selectedShow && (
-                        <Image
-                          source={{ uri: `${baseUrl}${selectedShow.posterPath}` }}
-                          style={styles.leftPoster}
-                        />
-                      )}
-
-                      <View style={styles.rightInfo}>
-                        {selectedShow && (
-                          <Text style={styles.bookDescription}>
-                            ⭐{selectedShow.rating}
-                          </Text>
-                        )}
-                      </View>
-                      <View style={styles.rightInfo}>
-                        {selectedShow && (
-                          <Text style={styles.bookDescription}>
-                            {selectedShow.overview}
-                          </Text>
-                        )}
-                      </View>
-                    </View>
-
-                    {/* DROPDOWN + Add to List BELOW the row */}
-                    <View style={styles.dropdownWrapper}>
-                      <Text style={styles.pickerLabel}>Add to List</Text>
-
-                      <TouchableOpacity
-                        style={styles.dropdownBox}
-                        onPress={() => setDropdownOpen(!dropdownOpen)}
-                      >
-                        <Text style={{ color: "#FFF" }}>
-                          {selectedList
-                            ? userLists?.find((l: any) => l.id === selectedList)
-                                ?.name
-                            : "Select a list..."}
-                        </Text>
-                      </TouchableOpacity>
-
-                      {dropdownOpen && userLists?.length > 0 && (
-                        <View style={styles.dropdownMenu}>
-                          {userLists.map((list: any) => (
-                            <TouchableOpacity
-                              key={list.id}
-                              style={styles.dropdownItem}
-                              onPress={() => {
-                                setSelectedList(list.id);
-                                setDropdownOpen(false);
-                              }}
-                            >
-                              <Text style={{ color: "#FFF" }}>{list.name}</Text>
-                            </TouchableOpacity>
-                          ))}
-                        </View>
-                      )}
-                    </View>
-
-                    <TouchableOpacity
-                      style={styles.addButton}
-                      onPress={() => {
-                        if (!selectedList) return;
-                        console.log("Added");
-                        setModalVisible(false);
-                      }}
-                    >
-                      <Text style={styles.addButtonText}>Add to List</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                      onPress={() => setModalVisible(false)}
-                      style={styles.closeButton}
-                    >
-                      <Text style={styles.closeText}>Close</Text>
-                    </TouchableOpacity>
-                  </View>
-                </TouchableWithoutFeedback>
-              </TouchableOpacity>
-            </Modal>
-          </>
+             <Modal
+                                                visible={modalVisible}
+                                                transparent
+                                                animationType="slide"
+                                                onRequestClose={() => setModalVisible(false)}
+                                            >
+                                                {/* CLOSE MODAL WHEN CLICKING OUTSIDE */}
+                                                <TouchableOpacity
+                                                
+                                                    activeOpacity={1}
+                                                    style={styles.modalOverlay}
+                                                    onPress={() => {
+                                                        setModalVisible(false);
+                                                        setDropdownOpen(false);
+                                                    }}
+                                                >
+                                                    <TouchableWithoutFeedback onPress={() => setDropdownOpen(false)}>
+                                                        <View style={styles.modalSheet}>
+                                                            {selectedShow && (
+                                                                <Text style={styles.bookTitle}>{selectedShow.title}</Text>
+                                                            )} 
+                    
+                                                            {/* ROW: Poster Left --- Description Right */}
+                                                            <View style={styles.infoRow}>
+                                                                {selectedShow && (
+                                                                    <Image
+                                                                source={{ uri: `${baseUrl}${selectedShow.posterPath}` }}
+                                                                        style={styles.leftPoster}
+                                                                    />
+                                                                )}
+                                                                
+                    
+                                                                <View style={styles.rightInfo}>
+                                                                    {selectedShow && (
+                                                                        <Text style={styles.ratingText}>
+                                                                        ★ {selectedShow.rating.toFixed(1)} 
+                                                                        {selectedShow.firstAirDate &&(
+                                                                           ` • ${new Date(selectedShow.firstAirDate).getFullYear()}`
+                                                                        )}
+                                                                        </Text>
+                                                                    )}
+                                                                
+                                                                    {selectedShow && (
+                                                                        <Text style={styles.bookDescription}>
+                                                                        {selectedShow.overview}
+                                                                        </Text>
+                                                                    )}
+                                                                </View>
+                                                            </View>
+                    
+                                                            {/* DROPDOWN + Add to List BELOW the row */}
+                                                            <View style={styles.dropdownWrapper}>
+                                                                <Text style={styles.pickerLabel}>Add to List</Text>
+                    
+                                                                <TouchableOpacity
+                                                                    style={styles.dropdownBox}
+                                                                    onPress={() => setDropdownOpen(!dropdownOpen)}
+                                                                >
+                                                                    <Text style={{ color: "#FFF" }}>
+                                                                        {selectedList
+                                                                            ? userLists?.find((l: any) => l.id === selectedList)?.name
+                                                                            : "Select a list..."}
+                    
+                                                                    </Text>
+                                                                </TouchableOpacity>
+                    
+                                                                {dropdownOpen && userLists?.length > 0 && (
+                                                                    <View style={styles.dropdownMenu}>
+                                                                        {userLists.map((list: any) => (
+                                                                            <TouchableOpacity
+                                                                                key={list.id}
+                                                                                style={styles.dropdownItem}
+                                                                                onPress={() => {
+                                                                                    setSelectedList(list.id);
+                                                                                    setDropdownOpen(false);
+                                                                                }}
+                                                                            >
+                                                                            
+                                                                                <Text style={{ color: "#FFF" }}>{list.name}</Text>
+                                                                            </TouchableOpacity>
+                                                                        ))}
+                                                                    </View>
+                                                                )}
+                                                            </View>
+                    
+                                                            <TouchableOpacity
+                                                                style={styles.addButton}
+                                                                onPress={() => {
+                                                                    if (!selectedList) return;
+                                                                    console.log("Added");
+                                                                    setModalVisible(false);
+                                                                }}
+                                                            >
+                                                                <Text style={styles.addButtonText}>Add to List</Text>
+                                                            </TouchableOpacity>
+                    
+                                                            <TouchableOpacity
+                                                                onPress={() => setModalVisible(false)}
+                                                                style={styles.closeButton}
+                                                            >
+                                                                <Text style={styles.closeText}>Close</Text>
+                                                            </TouchableOpacity>
+                                                        </View>
+                    
+                                                    </TouchableWithoutFeedback>
+                                                </TouchableOpacity>
+                                            </Modal>
+                    
+                    </>
         )}
       />
     </>
@@ -195,7 +200,7 @@ const styles = StyleSheet.create({
 
   modalSheet: {
     backgroundColor: "#1b1d2e",
-    height: "50%", // ⬅️ half-screen modal
+    height: "80%", // ⬅️ half-screen modal
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     padding: 20,
@@ -294,6 +299,7 @@ const styles = StyleSheet.create({
   rightInfo: {
     flex: 1,
     justifyContent: "flex-start",
+    paddingLeft: 10,
   },
 
   bookTitle: {
@@ -308,5 +314,14 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: "#EEE",
     lineHeight: 20,
+    textAlign: "left",
+
+  }, ratingText: {
+    fontSize: 16,
+    color: "#FFD700",
+    fontWeight: "600",
+    marginBottom: 12,
   },
+
+
 });

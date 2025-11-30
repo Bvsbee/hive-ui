@@ -19,17 +19,17 @@ const TrendingBooks = () => {
     const [modalVisible, setModalVisible] = useState(false);
     const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
     const [selectedList, setSelectedList] = useState<string>("");
-    const user = useAuthStore((state:any) => state.user);
+    const user = useAuthStore((state: any) => state.user);
 
     const userGuid = user?.guid;
 
     const { data: books, isLoading, isError, error } = useFetchBooks();
-    const {data : userLists, isLoading: listsLoading } = useFetchUserLists(userGuid ?? "");
+    const { data: userLists, isLoading: listsLoading } = useFetchUserLists(userGuid ?? "");
 
     if (isLoading)
         return <Text style={{ color: "white" }}>Loading Books...</Text>;
     if (error) return <Text>Error loading Books</Text>;
-    console.log(user );
+    console.log(user);
 
     return (
         <>
@@ -37,9 +37,9 @@ const TrendingBooks = () => {
                 style={{ fontSize: 18, fontWeight: "bold", margin: 10, color: "white" }}
             >
                 📚 Trending Books
-                
+
             </Text>
-            
+
             <FlatList
                 data={books}
                 horizontal
@@ -69,7 +69,7 @@ const TrendingBooks = () => {
                         >
                             {/* CLOSE MODAL WHEN CLICKING OUTSIDE */}
                             <TouchableOpacity
-                            
+
                                 activeOpacity={1}
                                 style={styles.modalOverlay}
                                 onPress={() => {
@@ -81,26 +81,25 @@ const TrendingBooks = () => {
                                     <View style={styles.modalSheet}>
                                         {selectedBook && (
                                             <Text style={styles.bookTitle}>{selectedBook.title}</Text>
-                                        )} 
+                                        )}
 
                                         {/* ROW: Poster Left --- Description Right */}
                                         <View style={styles.infoRow}>
                                             {selectedBook && (
                                                 <Image
-                                                    source={{ uri: selectedBook.book_image }}
+                                                    source={{ uri: selectedBook.book_image }}                                 
                                                     style={styles.leftPoster}
                                                 />
                                             )}
-                                            
+
 
                                             <View style={styles.rightInfo}>
+                                            
                                                 {selectedBook && (
-                                                    <Text style={styles.bookDescription}>
-                                                        {selectedBook.author}
-                                                    </Text>
+                                                    <Text style={styles.ratingText}>Author: {selectedBook.author} </Text>
                                                 )}
-                                            </View>
-                                            <View style={styles.rightInfo}>
+                                        
+
                                                 {selectedBook && (
                                                     <Text style={styles.bookDescription}>
                                                         {selectedBook.description}
@@ -136,7 +135,7 @@ const TrendingBooks = () => {
                                                                 setDropdownOpen(false);
                                                             }}
                                                         >
-                                                        
+
                                                             <Text style={{ color: "#FFF" }}>{list.name}</Text>
                                                         </TouchableOpacity>
                                                     ))}
@@ -202,7 +201,7 @@ const styles = StyleSheet.create({
 
     modalSheet: {
         backgroundColor: "#1b1d2e",
-        height: "50%", // ⬅️ half-screen modal
+        height: "80%", // ⬅️ half-screen modal
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30,
         padding: 20,
@@ -211,10 +210,9 @@ const styles = StyleSheet.create({
 
     modalPoster: {
         width: 130,
-        height: 200,
-        borderRadius: 12,
+        height: 190,
+        borderRadius: 10,
         marginBottom: 12,
-        
     },
 
     modalTitle: {
@@ -283,7 +281,6 @@ const styles = StyleSheet.create({
         color: "#FFF",
         fontSize: 15,
     },
-   
     infoRow: {
         flexDirection: "row",
         alignItems: "flex-start",
@@ -303,6 +300,7 @@ const styles = StyleSheet.create({
     rightInfo: {
         flex: 1,
         justifyContent: "flex-start",
+        paddingLeft: 10,
     },
 
     bookTitle: {
@@ -317,6 +315,13 @@ const styles = StyleSheet.create({
         fontSize: 15,
         color: "#EEE",
         lineHeight: 20,
+        textAlign: "left",
+
+    }, ratingText: {
+        fontSize: 16,
+        color: "#FFD700",
+        fontWeight: "600",
+        marginBottom: 12,
     },
 
 

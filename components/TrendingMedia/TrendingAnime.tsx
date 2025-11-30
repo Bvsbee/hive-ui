@@ -93,17 +93,17 @@ const TrendingAnime = () => {
 
                       <View style={styles.rightInfo}>
                         {selectedShow && (
-                          <Text style={styles.bookDescription}>
-                            ⭐{selectedShow.averageScore}/100
+                          <Text style={styles.ratingText}>
+                            ★{selectedShow.averageScore}/100
                           </Text>
                         )}
-                      </View>
-                      <View style={styles.rightInfo}>
+                       
                         {selectedShow && (
                           <Text style={styles.bookDescription}>
                             {stripHtml(selectedShow.description)}
                           </Text>
                         )}
+
                       </View>
                     </View>
 
@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
 
   modalSheet: {
     backgroundColor: "#1b1d2e",
-    height: "50%", // ⬅️ half-screen modal
+    height: "80%", // ⬅️ half-screen modal
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     padding: 20,
@@ -296,6 +296,7 @@ const styles = StyleSheet.create({
   rightInfo: {
     flex: 1,
     justifyContent: "flex-start",
+    paddingLeft: 10,
   },
 
   bookTitle: {
@@ -310,6 +311,14 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: "#EEE",
     lineHeight: 20,
+    textAlign: "left",
+
+  }, ratingText: {
+    fontSize: 16,
+    color: "#FFD700",
+    fontWeight: "600",
+    marginBottom: 12,
   },
+
 
 });
