@@ -19,6 +19,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import TrendingTVShows from "../TrendingMedia/TrendingTVShows";
 import TrendingMovies from "../TrendingMedia/TrendingMovies";
 import TrendingAnime from "../TrendingMedia/TrendingAnime";
+import TrendingBooks from "../TrendingMedia/TrendingBooks";
 import { ScrollView } from "react-native-gesture-handler";
 import CreateMediaListModal from "../CreateList/CreateMediaListModal";
 
@@ -43,20 +44,16 @@ export default function HomeScreen() {
         <View style={styles.header}>
           <Text style={styles.headerTitle}> {`Hello, ${user.firstName}!`}</Text>
         </View>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search..."
-          placeholderTextColor="#aaa"
-        />
         <View style={styles.container}>
           <ScrollView contentContainerStyle={styles.scrollContainer}>
             <TrendingTVShows />
             <TrendingMovies />
             <TrendingAnime />
+            <TrendingBooks />
           </ScrollView>
         </View>
 
-        <CreateMediaListModal />
+        {/* <CreateMediaListModal /> */}
       </KeyboardAvoidingView>
     </LinearGradient>
   );
@@ -74,14 +71,17 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: "bold",
     color: "#FFD700",
-    textAlign: "left",
+    textAlign: "center",
     textShadowColor: "#FFD700",
     textShadowOffset: { width: 0, height: 0 },
     textShadowRadius: 8,
+    paddingBottom: 10,
   },
   container: {
     flex: 1,
-    padding: 20,
+    //padding: 10,
+    paddingTop: 0,
+    width: "100%",
   },
   searchInput: {
     backgroundColor: "#17192C",
@@ -89,7 +89,9 @@ const styles = StyleSheet.create({
     padding: 10,
     color: "#f9f6deff",
     fontSize: 16,
-    marginBottom: 15,
+    marginBottom: 4,
+    width: "90%",
+    alignSelf: "center",
   },
   sections: {
     marginTop: 30,

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useFetchTvShows } from "../../services/mediaService";
+import { useFetchUserLists } from "../../services/listService";
 import {
   FlatList,
   Image,
@@ -10,13 +11,23 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
+import useAuthStore from "../stores/useAuthStore"
+import { getYear } from "../../services/mediaHelper";
+import { normalizeMedia, useAddItemToList } from "../../services/listService";
+import { ScrollView } from "react-native-gesture-handler";
+
 
 const TrendingTVShows = () => {
   const [selectedShow, setSelectedShow] = useState<any>(null);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
   const [selectedList, setSelectedList] = useState<string>("");
+  const user = useAuthStore((state: any) => state.user);
+  const userGuid = user?.guid;
   const { data: tvShows, isLoading, isError, error } = useFetchTvShows();
+  const { data: userLists, isLoading: listsLoading } = useFetchUserLists(userGuid ?? "");
+  const addItemMutation = useAddItemToList();
+
 
   const baseUrl = "https://image.tmdb.org/t/p/w500/";
 
@@ -24,6 +35,27 @@ const TrendingTVShows = () => {
     return <Text style={{ color: "white" }}>Loading TV Shows...</Text>;
   if (error) return <Text>Error loading TV Shows</Text>;
 
+  const handleAddMShowToList = () => {
+    if (!selectedList || !selectedShow) return;
+
+    try {
+      const payload = normalizeMedia(selectedShow, selectedList);
+
+      console.log("show PAYLOAD:", payload);
+
+      addItemMutation.mutate(payload, {
+        onSuccess: () => {
+          console.log("Show added!");
+          setModalVisible(false);
+        },
+        onError: (err) => {
+          console.error("Failed to add show:", err);
+        }
+      });
+    } catch (err) {
+      console.error("Normalization error:", err);
+    }
+  };
   return (
     <>
       <Text
@@ -52,7 +84,6 @@ const TrendingTVShows = () => {
                 style={styles.poster}
               />
             </TouchableOpacity>
-            <Text style={styles.movieTitle}>{item.title}</Text>
 
             <Modal
               visible={modalVisible}
@@ -62,6 +93,7 @@ const TrendingTVShows = () => {
             >
               {/* CLOSE MODAL WHEN CLICKING OUTSIDE */}
               <TouchableOpacity
+
                 activeOpacity={1}
                 style={styles.modalOverlay}
                 onPress={() => {
@@ -69,61 +101,80 @@ const TrendingTVShows = () => {
                   setDropdownOpen(false);
                 }}
               >
-                <TouchableWithoutFeedback
-                  onPress={() => setDropdownOpen(false)}
-                >
+                <TouchableWithoutFeedback onPress={() => setDropdownOpen(false)}>
                   <View style={styles.modalSheet}>
-                    {/* Poster */}
                     {selectedShow && (
-                      <Image
-                        source={{ uri: `${baseUrl}${selectedShow.posterPath}` }}
-                        style={styles.modalPoster}
-                      />
+                      <Text style={styles.bookTitle}>{selectedShow.name}</Text>
                     )}
+
+                    {/* ROW: Poster Left --- Description Right */}
+                    <View style={styles.infoRow}>
+                      {selectedShow && (
+                        <Image
+                          source={{ uri: `${baseUrl}${selectedShow.posterPath}` }}
+                          style={styles.leftPoster}
+                        />
+                      )}
+
+
+                      <View style={styles.rightInfo}>
+                        {selectedShow && (
+                          <Text style={styles.ratingText}>
+                            ★ {selectedShow.rating.toFixed(1)}
+                            {selectedShow.firstAirDate && (
+                              ` • ${new Date(selectedShow.firstAirDate).getFullYear()}`
+                            )}
+                          </Text>
+                        )}
+                        <ScrollView style={{flex:1}} showsVerticalScrollIndicator={false}>
+                        {selectedShow && (
+                          <Text style={styles.bookDescription}>
+                            {selectedShow.overview}
+                          </Text>
+                        )}
+                        </ScrollView>
+                      </View>
+                    </View>
+
+                    {/* DROPDOWN + Add to List BELOW the row */}
                     <View style={styles.dropdownWrapper}>
                       <Text style={styles.pickerLabel}>Add to List</Text>
 
                       <TouchableOpacity
                         style={styles.dropdownBox}
                         onPress={() => setDropdownOpen(!dropdownOpen)}
-                        activeOpacity={0.8}
                       >
                         <Text style={{ color: "#FFF" }}>
                           {selectedList
-                            ? mockLists.find((l) => l.id === selectedList)?.name
+                            ? userLists?.find((l: any) => l.guid === selectedList)?.name
                             : "Select a list..."}
+
                         </Text>
                       </TouchableOpacity>
 
-                      {dropdownOpen && (
+                      {dropdownOpen && userLists?.length > 0 && (
                         <View style={styles.dropdownMenu}>
-                          {mockLists.map((list) => (
+                          <ScrollView style={{maxHeight: 150}}>
+                          {userLists.map((list: any) => (
                             <TouchableOpacity
-                              key={list.id}
+                              key={list.guid}
                               style={styles.dropdownItem}
                               onPress={() => {
-                                setSelectedList(list.id);
+                                setSelectedList(list.guid);
                                 setDropdownOpen(false);
                               }}
                             >
+
                               <Text style={{ color: "#FFF" }}>{list.name}</Text>
                             </TouchableOpacity>
                           ))}
+                          </ScrollView>
                         </View>
                       )}
                     </View>
 
-                    <TouchableOpacity
-                      style={styles.addButton}
-                      onPress={() => {
-                        if (!selectedList) {
-                          console.log("No list selected");
-                          return;
-                        }
-                        console.log("Added to list");
-                        setModalVisible(false);
-                      }}
-                    >
+
+                    <TouchableOpacity style={styles.addButton} onPress={handleAddMShowToList}>
                       <Text style={styles.addButtonText}>Add to List</Text>
                     </TouchableOpacity>
 
@@ -134,9 +185,11 @@ const TrendingTVShows = () => {
                       <Text style={styles.closeText}>Close</Text>
                     </TouchableOpacity>
                   </View>
+
                 </TouchableWithoutFeedback>
               </TouchableOpacity>
             </Modal>
+
           </>
         )}
       />
@@ -172,7 +225,7 @@ const styles = StyleSheet.create({
 
   modalSheet: {
     backgroundColor: "#1b1d2e",
-    height: "50%", // ⬅️ half-screen modal
+    height: "60%", // ⬅️ half-screen modal
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     padding: 20,
@@ -252,4 +305,48 @@ const styles = StyleSheet.create({
     color: "#FFF",
     fontSize: 15,
   },
+  infoRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    width: "100%",
+    marginTop: 10,
+    marginBottom: 20,
+    gap: 16,
+  },
+
+  leftPoster: {
+    width: 130,
+    height: 200,
+    borderRadius: 12,
+    backgroundColor: "#273e79",
+  },
+
+  rightInfo: {
+    flex: 1,
+    justifyContent: "flex-start",
+    paddingLeft: 10,
+  },
+
+  bookTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#ED3838",
+    textAlign: "center",
+    marginBottom: 15,
+  },
+
+  bookDescription: {
+    fontSize: 15,
+    color: "#EEE",
+    lineHeight: 20,
+    textAlign: "left",
+
+  }, ratingText: {
+    fontSize: 16,
+    color: "#FFD700",
+    fontWeight: "600",
+    marginBottom: 12,
+  },
+
+
 });

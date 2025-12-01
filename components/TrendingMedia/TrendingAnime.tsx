@@ -1,22 +1,68 @@
 import { useState } from "react";
 import { useFetchAnime } from "../../services/mediaService";
+import { useFetchUserLists, normalizeMedia, useAddItemToList } from "../../services/listService";
+import useAuthStore from "../stores/useAuthStore"
 import {
   FlatList,
   Image,
+  Modal,
   StyleSheet,
   Text,
   TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
 } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
 
-const TrendingTVShows = () => {
+
+
+
+const TrendingAnime = () => {
   const [selectedShow, setSelectedShow] = useState<any>(null);
   const [modalVisible, setModalVisible] = useState(false);
-
+  const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
+  const [selectedList, setSelectedList] = useState<string>("");
+  const user = useAuthStore((state: any) => state.user);
+  const userGuid = user?.guid;
   const { data: anime, isLoading, isError, error } = useFetchAnime();
+  const {data : userLists, isLoading: listsLoading } = useFetchUserLists(userGuid ?? "");
+  const stripHtml = (html: string) => html.replace(/<[^>]*>/g, "");
+  const addItemMutation = useAddItemToList();
 
   if (isLoading)
     return <Text style={{ color: "white" }}>Loading Anime...</Text>;
   if (error) return <Text>Error loading Anime</Text>;
+
+  
+  const handleAddToList = () => {
+    if (!selectedList || !selectedShow) return;
+
+    try {
+      const payload = normalizeMedia(
+        {
+          ...selectedShow,
+          mediaType: "ANIME",
+          description: stripHtml(selectedShow.description)
+        },
+        selectedList
+      );
+
+      console.log("Sending payload:", payload);
+
+      addItemMutation.mutate(payload, {
+        onSuccess: () => {
+          console.log("Successfully added!");
+          setModalVisible(false);
+        },
+        onError: (err) => {
+          console.error("Failed to add:", err);
+        },
+      });
+    } catch (err) {
+      console.error("Normalization error:", err);
+    }
+  };
+
 
   return (
     <>
@@ -46,7 +92,118 @@ const TrendingTVShows = () => {
                 style={styles.poster}
               />
             </TouchableOpacity>
-            <Text style={styles.animeTitle}>{item.title.english}</Text>
+            <Modal
+              visible={modalVisible}
+              transparent
+              animationType="slide"
+              onRequestClose={() => setModalVisible(false)}
+            >
+              {/* CLOSE MODAL WHEN CLICKING OUTSIDE */}
+              <TouchableOpacity
+                activeOpacity={1}
+                style={styles.modalOverlay}
+                onPress={() => {
+                  setModalVisible(false);
+                  setDropdownOpen(false);
+                }}
+              >
+                <TouchableWithoutFeedback
+                  onPress={() => setDropdownOpen(false)}
+                >
+                  <View style={styles.modalSheet}>
+                    {selectedShow && (
+                      <Text style={styles.bookTitle}>
+                        {selectedShow.title.english ?? selectedShow.title.romaji}                        </Text>
+                    )}
+
+                    {/* ROW: Poster Left --- Description Right */}
+                    <View style={styles.infoRow}> 
+                      {/* <View style={styles.mediaCard}>  */}
+                      {selectedShow && (
+                        <Image
+                          source={{
+                            uri: `${selectedShow.coverImage.medium}`,
+                          }}
+                          style={styles.leftPoster}
+                        />
+                      )}
+
+                      
+                      <View style={styles.rightInfo}>
+                        {selectedShow && (
+                          <Text style={styles.ratingText}>
+                            ★{selectedShow.averageScore/10}
+                                {/*divide by 10 to scale down anime score from 100  */}
+                              {selectedShow.startDate && (
+                              ` • ${new Date(selectedShow.startDate.year).getFullYear()}`
+                            )}
+                          </Text>
+                        )}
+                       <ScrollView style={{flex:1}} showsVerticalScrollIndicator={false}>
+                        {selectedShow && (
+                          <Text style={styles.bookDescription} >
+                            {stripHtml(selectedShow.description)}
+                          </Text>
+                        )}
+                      </ScrollView>
+                      </View>
+                      {/* </View> */}
+                    </View>
+
+                    {/* DROPDOWN + Add to List BELOW the row */}
+                    <View style={styles.dropdownWrapper}>
+                      <Text style={styles.pickerLabel}>Add to List</Text>
+
+                      <TouchableOpacity
+                        style={styles.dropdownBox}
+                        onPress={() => setDropdownOpen(!dropdownOpen)}
+                      >
+                        <Text style={{ color: "#FFF" }}>
+                          {selectedList
+                            ? userLists?.find((l: any) => l.guid === selectedList)
+                                ?.name
+                            : "Select a list..."}
+                        </Text>
+                      </TouchableOpacity>
+
+                      {dropdownOpen && userLists?.length > 0 && (
+                        <View style={styles.dropdownMenu}>
+                          <ScrollView style={{maxHeight: 150}}>
+                          {userLists.map((list: any) => (
+                            <TouchableOpacity
+                              key={list.guid}
+                              style={styles.dropdownItem}
+                              onPress={() => {
+                                setSelectedList(list.guid);
+                                setDropdownOpen(false);
+                              }}
+                            >
+                              <Text style={{ color: "#FFF" }}>{list.name}</Text>
+                            </TouchableOpacity>
+                          ))}
+                          </ScrollView>
+                        </View>
+                      )}
+                    </View>
+
+                    <TouchableOpacity
+                      style={styles.addButton}
+                      onPress={handleAddToList}
+                    >
+                      <Text style={styles.addButtonText}>Add to List</Text>
+                    </TouchableOpacity>
+
+
+                    <TouchableOpacity
+                      onPress={() => setModalVisible(false)}
+                      style={styles.closeButton}
+                    >
+                      <Text style={styles.closeText}>Close</Text>
+                    </TouchableOpacity>
+                  </View>
+                </TouchableWithoutFeedback>
+              </TouchableOpacity>
+            </Modal>
           </>
         )}
       />
@@ -54,7 +211,7 @@ const TrendingTVShows = () => {
   );
 };
 
-export default TrendingTVShows;
+export default TrendingAnime;
 
 const styles = StyleSheet.create({
   poster: {
@@ -63,7 +220,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: "#273e79",
   },
-  animeTitle: {
+  movieTitle: {
     fontSize: 14,
     fontWeight: "light",
     color: "#f9f6deff",
@@ -74,86 +231,148 @@ const styles = StyleSheet.create({
     marginRight: 12,
     alignItems: "center",
   },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.6)",
+    justifyContent: "flex-end",
+  },
+
+  modalSheet: {
+    backgroundColor: "#1b1d2e",
+    height: "60%", // ⬅️ half-screen modal
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    padding: 20,
+    alignItems: "center",
+  },
+
+  modalPoster: {
+    width: 130,
+    height: 190,
+    borderRadius: 10,
+    marginBottom: 12,
+  },
+
+  modalTitle: {
+    color: "#ed3838ff",
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 20,
+    textAlign: "center",
+  },
+  dropdownWrapper: {
+    width: "90%",
+    marginBottom: 20,
+  },
+
+  dropdownBox: {
+    backgroundColor: "#1F2236",
+    borderRadius: 14,
+    borderWidth: 1.2,
+    borderColor: "rgba(255, 215, 0, 0.45)",
+    paddingHorizontal: 12,
+    height: 54,
+    justifyContent: "center",
+  },
+
+  dropdownMenu: {
+    marginTop: 6,
+    backgroundColor: "#1F2236",
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "rgba(255, 215, 0, 0.35)",
+    overflow: "hidden",
+  },
+
+  dropdownItem: {
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    borderBottomWidth: 1,
+    borderColor: "rgba(255,255,255,0.08)",
+  },
+  pickerLabel: {
+    fontSize: 16,
+    textAlign: "left",
+    fontWeight: "600",
+    color: "#FFD700",
+    marginBottom: 6,
+  },
+  addButton: {
+    backgroundColor: "#FFD700",
+    paddingVertical: 12,
+    paddingHorizontal: 40,
+    borderRadius: 12,
+    marginBottom: 15,
+  },
+
+  addButtonText: {
+    color: "#000",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+
+  closeButton: {
+    padding: 8,
+  },
+
+  closeText: {
+    color: "#FFF",
+    fontSize: 15,
+  },
+  infoRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    width: "100%",
+    marginTop: 10,
+    marginBottom: 20,
+    //gap: 16,
+  },
+
+  leftPoster: {
+    width: 130,
+    height: 200,
+    borderRadius: 12,
+    backgroundColor: "#273e79",
+    
+  },
+
+  rightInfo: {
+    flex: 1,
+    justifyContent: "flex-start",
+    paddingLeft: 10,
+  },
+
+  bookTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#ED3838",
+    textAlign: "center",
+    marginBottom: 15,
+  },
+
+  bookDescription: {
+    fontSize: 15,
+    color: "#EEE",
+    lineHeight: 20,
+    textAlign: "left",
+    //maxHeight: 200,
+
+  }, ratingText: {
+    fontSize: 16,
+    color: "#FFD700",
+    fontWeight: "600",
+    marginBottom: 12,
+  },
+  // mediaCard: {
+  //   flexDirection: "row",
+  //   //backgroundColor: "rgba(255, 255, 255, 0.05)",
+  //   borderRadius: 15,
+  //   padding: 15,
+  //   marginBottom: 15,
+  //   borderWidth: 1,
+  //   borderColor: "rgba(255, 215, 0, 0.2)",
+  // },
+
+
+
 });
-
-//  <Modal
-//           visible={modalVisible}
-//           transparent
-//           animationType="slide"
-//           onRequestClose={() => setModalVisible(false)}
-//         >
-//           {/* CLOSE MODAL WHEN CLICKING OUTSIDE */}
-//           <TouchableOpacity
-//             activeOpacity={1}
-//             style={styles.modalOverlay}
-//             onPress={() => {
-//               setModalVisible(false);
-//               setDropdownOpen(false);
-//             }}
-//           >
-//             <TouchableWithoutFeedback onPress={() => setDropdownOpen(false)}>
-//               <View style={styles.modalSheet}>
-//                 {/* Poster */}
-//                 {selectedShow && (
-//                   <Image
-//                     source={{ uri: `${baseUrl}${selectedShow.posterPath}` }}
-//                     style={styles.modalPoster}
-//                   />
-//                 )}
-//                 <View style={styles.dropdownWrapper}>
-//                   <Text style={styles.pickerLabel}>Add to List</Text>
-
-//                   <TouchableOpacity
-//                     style={styles.dropdownBox}
-//                     onPress={() => setDropdownOpen(!dropdownOpen)}
-//                     activeOpacity={0.8}
-//                   >
-//                     <Text style={{ color: "#FFF" }}>
-//                       {selectedList
-//                         ? mockLists.find((l) => l.id === selectedList)?.name
-//                         : "Select a list..."}
-//                     </Text>
-//                   </TouchableOpacity>
-
-//                   {dropdownOpen && (
-//                     <View style={styles.dropdownMenu}>
-//                       {mockLists.map((list) => (
-//                         <TouchableOpacity
-//                           key={list.id}
-//                           style={styles.dropdownItem}
-//                           onPress={() => {
-//                             setSelectedList(list.id);
-//                             setDropdownOpen(false);
-//                           }}
-//                         >
-//                           <Text style={{ color: "#FFF" }}>{list.name}</Text>
-//                         </TouchableOpacity>
-//                       ))}
-//                     </View>
-//                   )}
-//                 </View>
-
-//                 <TouchableOpacity
-//                   style={styles.addButton}
-//                   onPress={() => {
-//                     if (!selectedList) {
-//                       console.log("No list selected");
-//                       return;
-//                     }
-//                     console.log("Added to list");
-//                     setModalVisible(false);
-//                   }}
-//                 >
-//                   <Text style={styles.addButtonText}>Add to List</Text>
-//                 </TouchableOpacity>
-
-//                 <TouchableOpacity
-//                   onPress={() => setModalVisible(false)}
-//                   style={styles.closeButton}
-//                 >
-//                   <Text style={styles.closeText}>Close</Text>
-//                 </TouchableOpacity>
-//               </View>
-//             </TouchableWithoutFeedback>
-//           </TouchableOpacity>
-//         </Modal>

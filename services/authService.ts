@@ -18,7 +18,7 @@ export const useCreateUser = () => {
 const loginUser = async (email: string, password?: string) => {
   const payload = { email, password };
   if (email && password) {
-    const { data } = await hiveAPI.post("auth/login", payload);
+    const { data } = await hiveAPI.post("/auth/login", payload);
 
     // localStorage.setItem("token", data.access_token);
 
