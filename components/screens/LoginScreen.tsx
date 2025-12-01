@@ -51,10 +51,11 @@ export default function LoginScreen() {
             source={require("../../assets/logo.png")}
             style={styles.logoImage}
           />
+          <Text style={styles.mainTitle}>Welcome Back</Text>
+        <Text style={styles.subTitle}>Sign into your HIVE account</Text>
         </View>
 
-        <Text style={styles.mainTitle}>Welcome Back</Text>
-        <Text style={styles.subTitle}>Sign into your HIVE account</Text>
+
 
         <View style={{ paddingHorizontal: 20, marginBottom: 30 }}>
           <View style={styles.inputContainer}>

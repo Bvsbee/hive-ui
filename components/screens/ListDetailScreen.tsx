@@ -113,7 +113,7 @@ export default function ListDetailScreen() {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollList}
         >
-          {" "}
+        
           {/* list items */}
           {isLoading ? (
             <View style={styles.loadingContainer}>
