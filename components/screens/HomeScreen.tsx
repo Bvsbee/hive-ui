@@ -44,11 +44,6 @@ export default function HomeScreen() {
         <View style={styles.header}>
           <Text style={styles.headerTitle}> {`Hello, ${user.firstName}!`}</Text>
         </View>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search..."
-          placeholderTextColor="#aaa"
-        />
         <View style={styles.container}>
           <ScrollView contentContainerStyle={styles.scrollContainer}>
             <TrendingTVShows />
