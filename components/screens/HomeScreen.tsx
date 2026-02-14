@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect} from "react";
+import { Animated } from "react-native";
+import { useRef } from "react";
 import {
   Text,
   View,
@@ -28,11 +30,33 @@ export default function HomeScreen() {
 
   const queryClient = useQueryClient();
 
+  const helloOpacity = useRef(new Animated.Value(1)).current;
+  const searchOpacity = useRef(new Animated.Value(0)).current;
+
   useEffect(() => {
+
+    const timer = setTimeout(() => {
+      Animated.parallel([
+        Animated.timing(helloOpacity, {
+          toValue: 0,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(searchOpacity, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    }, 3000);
+
     queryClient.prefetchQuery({ queryKey: ["tvShows"], queryFn: fetchTvShows });
     queryClient.prefetchQuery({ queryKey: ["movies"], queryFn: fetchMovies });
     queryClient.prefetchQuery({ queryKey: ["books"], queryFn: fetchBooks });
     queryClient.prefetchQuery({ queryKey: ["anime"], queryFn: fetchAnime });
+  
+
+      return () => clearTimeout(timer);
   }, []);
 
   return (
@@ -41,9 +65,35 @@ export default function HomeScreen() {
         style={{ flex: 1, width: "100%" }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}> {`Hello, ${user.firstName}!`}</Text>
-        </View>
+<View style={styles.header}>
+  <Animated.View
+    style={{
+      opacity: helloOpacity,
+      position: "absolute",
+      width: "100%",
+    }}
+  >
+    <Text style={styles.headerTitle}>
+      Hello, {user?.firstName ?? "there"}!
+    </Text>
+  </Animated.View>
+
+  <Animated.View
+    style={{
+      opacity: searchOpacity,
+      position: "absolute",
+      width: "100%",
+      alignItems: "center",
+    }}
+  >
+    <TextInput
+      placeholder="Search for movies, TV shows, anime, and books..."
+      placeholderTextColor="#f9f6deff"
+      style={styles.searchInput}
+    />
+  </Animated.View>
+</View>
+
         <View style={styles.container}>
           <ScrollView contentContainerStyle={styles.scrollContainer}>
             <TrendingTVShows />
@@ -63,10 +113,13 @@ const styles = StyleSheet.create({
   backButton: { position: "absolute", top: 50, left: 20 },
   backArrow: { fontSize: 24, color: "#ffd700", fontWeight: "bold" },
 
-  header: {
-    paddingTop: 80,
-    paddingHorizontal: 20,
-  },
+ header: {
+  paddingTop: 80,
+  paddingHorizontal: 20,
+  height: 140,
+  justifyContent: "center",
+},
+
   headerTitle: {
     fontSize: 32,
     fontWeight: "bold",
