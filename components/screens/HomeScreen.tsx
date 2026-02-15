@@ -1,6 +1,7 @@
-import React, { useEffect} from "react";
+import React, { useEffect } from "react";
 import { Animated } from "react-native";
 import { useRef } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
 import {
   Text,
   View,
@@ -34,7 +35,6 @@ export default function HomeScreen() {
   const searchOpacity = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-
     const timer = setTimeout(() => {
       Animated.parallel([
         Animated.timing(helloOpacity, {
@@ -54,45 +54,45 @@ export default function HomeScreen() {
     queryClient.prefetchQuery({ queryKey: ["movies"], queryFn: fetchMovies });
     queryClient.prefetchQuery({ queryKey: ["books"], queryFn: fetchBooks });
     queryClient.prefetchQuery({ queryKey: ["anime"], queryFn: fetchAnime });
-  
 
-      return () => clearTimeout(timer);
+    return () => clearTimeout(timer);
   }, []);
 
-  return (
-    <LinearGradient colors={["#17192C", "#273e79ff"]} style={{ flex: 1 }}>
+return (
+  <LinearGradient colors={["#17192C", "#273e79ff"]} style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1 }}>
       <KeyboardAvoidingView
         style={{ flex: 1, width: "100%" }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
-<View style={styles.header}>
-  <Animated.View
-    style={{
-      opacity: helloOpacity,
-      position: "absolute",
-      width: "100%",
-    }}
-  >
-    <Text style={styles.headerTitle}>
-      Hello, {user?.firstName ?? "there"}!
-    </Text>
-  </Animated.View>
+        <View style={styles.header}>
+          <Animated.View
+            style={{
+              opacity: helloOpacity,
+              position: "absolute",
+              width: "100%",
+            }}
+          >
+            <Text style={styles.headerTitle}>
+              Hello, {user?.firstName ?? "there"}!
+            </Text>
+          </Animated.View>
 
-  <Animated.View
-    style={{
-      opacity: searchOpacity,
-      position: "absolute",
-      width: "100%",
-      alignItems: "center",
-    }}
-  >
-    <TextInput
-      placeholder="Search for movies, TV shows, anime, and books..."
-      placeholderTextColor="#f9f6deff"
-      style={styles.searchInput}
-    />
-  </Animated.View>
-</View>
+          <Animated.View
+            style={{
+              opacity: searchOpacity,
+              position: "absolute",
+              width: "100%",
+              alignItems: "center",
+            }}
+          >
+            <TextInput
+              placeholder="Search for movies, TV shows, anime, and books..."
+              placeholderTextColor="#f9f6deff"
+              style={styles.searchInput}
+            />
+          </Animated.View>
+        </View>
 
         <View style={styles.container}>
           <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -102,23 +102,24 @@ export default function HomeScreen() {
             <TrendingBooks />
           </ScrollView>
         </View>
-
-        {/* <CreateMediaListModal /> */}
       </KeyboardAvoidingView>
-    </LinearGradient>
-  );
+    </SafeAreaView>
+  </LinearGradient>
+);
 }
+
 
 const styles = StyleSheet.create({
   backButton: { position: "absolute", top: 50, left: 20 },
   backArrow: { fontSize: 24, color: "#ffd700", fontWeight: "bold" },
 
- header: {
-  paddingTop: 80,
-  paddingHorizontal: 20,
-  height: 140,
-  justifyContent: "center",
-},
+  header: {
+    paddingBottom: 10,
+    paddingHorizontal: 20,
+    alignItems: "center", 
+    justifyContent: "center",
+    minHeight: 70,
+  },
 
   headerTitle: {
     fontSize: 32,
