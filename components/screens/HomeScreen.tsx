@@ -58,56 +58,55 @@ export default function HomeScreen() {
     return () => clearTimeout(timer);
   }, []);
 
-return (
-  <LinearGradient colors={["#17192C", "#273e79ff"]} style={{ flex: 1 }}>
-    <SafeAreaView style={{ flex: 1 }}>
-      <KeyboardAvoidingView
-        style={{ flex: 1, width: "100%" }}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-      >
-        <View style={styles.header}>
-          <Animated.View
-            style={{
-              opacity: helloOpacity,
-              position: "absolute",
-              width: "100%",
-            }}
-          >
-            <Text style={styles.headerTitle}>
-              Hello, {user?.firstName ?? "there"}!
-            </Text>
-          </Animated.View>
+  return (
+    <LinearGradient colors={["#17192C", "#273e79ff"]} style={{ flex: 1 }}>
+      <SafeAreaView style={{ flex: 1 }}>
+        <KeyboardAvoidingView
+          style={{ flex: 1, width: "100%" }}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
+          <View style={styles.header}>
+            <Animated.View
+              style={{
+                opacity: helloOpacity,
+                position: "absolute",
+                width: "100%",
+              }}
+            >
+              <Text style={styles.headerTitle}>
+                Hello, {user?.firstName ?? "there"}!
+              </Text>
+            </Animated.View>
 
-          <Animated.View
-            style={{
-              opacity: searchOpacity,
-              position: "absolute",
-              width: "100%",
-              alignItems: "center",
-            }}
-          >
-            <TextInput
-              placeholder="Search for movies, TV shows, anime, and books..."
-              placeholderTextColor="#f9f6deff"
-              style={styles.searchInput}
-            />
-          </Animated.View>
-        </View>
+            <Animated.View
+              style={{
+                opacity: searchOpacity,
+                position: "absolute",
+                width: "100%",
+                alignItems: "center",
+              }}
+            >
+              <TextInput
+                placeholder="Search for movies, TV shows, anime, and books..."
+                placeholderTextColor="#f9f6deff"
+                style={styles.searchInput}
+              />
+            </Animated.View>
+          </View>
 
-        <View style={styles.container}>
-          <ScrollView contentContainerStyle={styles.scrollContainer}>
-            <TrendingTVShows />
-            <TrendingMovies />
-            <TrendingAnime />
-            <TrendingBooks />
-          </ScrollView>
-        </View>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
-  </LinearGradient>
-);
+          <View style={styles.container}>
+            <ScrollView contentContainerStyle={styles.scrollContainer}>
+              <TrendingTVShows />
+              <TrendingMovies />
+              <TrendingAnime />
+              <TrendingBooks />
+            </ScrollView>
+          </View>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </LinearGradient>
+  );
 }
-
 
 const styles = StyleSheet.create({
   backButton: { position: "absolute", top: 50, left: 20 },
@@ -116,7 +115,7 @@ const styles = StyleSheet.create({
   header: {
     paddingBottom: 10,
     paddingHorizontal: 20,
-    alignItems: "center", 
+    alignItems: "center",
     justifyContent: "center",
     minHeight: 70,
   },

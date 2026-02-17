@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { ScrollView } from "react-native"
 import {
   Text,
   View,
@@ -35,10 +37,16 @@ export default function LoginScreen() {
 
   return (
     <LinearGradient colors={["#17192C", "#273e79ff"]} style={{ flex: 1 }}>
+      <SafeAreaView style={{ flex: 1 }}>
       <KeyboardAvoidingView
         style={{ flex: 1, width: "100%" }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
+          <ScrollView
+          contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}
+          keyboardShouldPersistTaps="handled"
+        >
+          
         <TouchableOpacity
           style={styles.backButton}
           onPress={() => navigation.navigate("Startup")}
@@ -104,19 +112,25 @@ export default function LoginScreen() {
             </Text>
           )}
         </View>
+        </ScrollView>
       </KeyboardAvoidingView>
+      </SafeAreaView>    
     </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  backButton: { position: "absolute", top: 50, left: 20 },
+  backButton: {
+  position: "absolute",
+  top: 10,
+  left: 20,
+  zIndex: 10,
+},
   backArrow: { fontSize: 24, color: "#ffd700", fontWeight: "bold" },
   logoContainer: {
-    flex: 0.75,
-    justifyContent: "center",
     alignItems: "center",
-    marginTop: 60,
+    marginTop: 40,
+    marginBottom: 20,
   },
   logoImage: { width: 180, height: 180, borderRadius: 12 },
   mainTitle: {
