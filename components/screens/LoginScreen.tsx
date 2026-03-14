@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { ScrollView } from "react-native";
 import {
   Text,
   View,
@@ -35,88 +37,103 @@ export default function LoginScreen() {
 
   return (
     <LinearGradient colors={["#17192C", "#273e79ff"]} style={{ flex: 1 }}>
-      <KeyboardAvoidingView
-        style={{ flex: 1, width: "100%" }}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-      >
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => navigation.navigate("Startup")}
+      <SafeAreaView style={{ flex: 1 }}>
+        <KeyboardAvoidingView
+          style={{ flex: 1, width: "100%" }}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
-          <Text style={styles.backArrow}>←</Text>
-        </TouchableOpacity>
-
-        <View style={styles.logoContainer}>
-          <Image
-            source={require("../../assets/logo.png")}
-            style={styles.logoImage}
-          />
-          <Text style={styles.mainTitle}>Welcome Back</Text>
-        <Text style={styles.subTitle}>Sign into your HIVE account</Text>
-        </View>
-
-
-
-        <View style={{ paddingHorizontal: 20, marginBottom: 30 }}>
-          <View style={styles.inputContainer}>
-            <Text style={styles.textLabel}>Email</Text>
-            <TextInput
-              style={styles.textInput}
-              placeholder="Enter your email"
-              placeholderTextColor="#b0b0b0"
-              value={email}
-              onChangeText={setEmail}
-            />
-          </View>
-
-          <View style={styles.inputContainer}>
-            <Text style={styles.textLabel}>Password</Text>
-            <TextInput
-              style={styles.textInput}
-              placeholder="Enter your password"
-              placeholderTextColor="#b0b0b0"
-              secureTextEntry
-              value={password}
-              onChangeText={setPassword}
-            />
-            <TouchableOpacity style={{ alignItems: "flex-end", marginTop: 8 }}>
-              <Text style={styles.forgotPassword}>Forgot Password?</Text>
-            </TouchableOpacity>
-          </View>
-
-          <TouchableOpacity
-            style={styles.createButton}
-            onPress={handleLogin}
-            disabled={isPending}
+          <ScrollView
+            contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}
+            keyboardShouldPersistTaps="handled"
           >
-            {isPending ? (
-              <ActivityIndicator color="#000" />
-            ) : (
-              <Text style={styles.createButtonText}>Sign In</Text>
-            )}
-          </TouchableOpacity>
-
-          {error && (
-            <Text
-              style={{ color: "#FF4D4D", textAlign: "center", marginTop: 10 }}
+            <TouchableOpacity
+              style={styles.backButton}
+              onPress={() => navigation.navigate("Startup")}
             >
-              {error.message}
-            </Text>
-          )}
-        </View>
-      </KeyboardAvoidingView>
+              <Text style={styles.backArrow}>←</Text>
+            </TouchableOpacity>
+
+            <View style={styles.logoContainer}>
+              <Image
+                source={require("../../assets/logo.png")}
+                style={styles.logoImage}
+              />
+              <Text style={styles.mainTitle}>Welcome Back</Text>
+              <Text style={styles.subTitle}>Sign into your HIVE account</Text>
+            </View>
+
+            <View style={{ paddingHorizontal: 20, marginBottom: 30 }}>
+              <View style={styles.inputContainer}>
+                <Text style={styles.textLabel}>Email</Text>
+                <TextInput
+                  style={styles.textInput}
+                  placeholder="Enter your email"
+                  placeholderTextColor="#b0b0b0"
+                  value={email}
+                  onChangeText={setEmail}
+                />
+              </View>
+
+              <View style={styles.inputContainer}>
+                <Text style={styles.textLabel}>Password</Text>
+                <TextInput
+                  style={styles.textInput}
+                  placeholder="Enter your password"
+                  placeholderTextColor="#b0b0b0"
+                  secureTextEntry
+                  value={password}
+                  onChangeText={setPassword}
+                />
+                <TouchableOpacity
+                  style={{ alignItems: "flex-end", marginTop: 8 }}
+                >
+                  <Text style={styles.forgotPassword}>Forgot Password?</Text>
+                </TouchableOpacity>
+              </View>
+
+              <TouchableOpacity
+                style={styles.createButton}
+                onPress={handleLogin}
+                disabled={isPending}
+              >
+                {isPending ? (
+                  <ActivityIndicator color="#000" />
+                ) : (
+                  <Text style={styles.createButtonText}>Sign In</Text>
+                )}
+              </TouchableOpacity>
+
+              {error && (
+                <Text
+                  style={{
+                    color: "#FF4D4D",
+                    textAlign: "center",
+                    marginTop: 10,
+                  }}
+                >
+                  {error.message}
+                </Text>
+              )}
+            </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
     </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  backButton: { position: "absolute", top: 50, left: 20 },
+  backButton: {
+    position: "absolute",
+    top: 10,
+    left: 20,
+    zIndex: 10,
+  },
   backArrow: { fontSize: 24, color: "#ffd700", fontWeight: "bold" },
   logoContainer: {
-    flex: 0.75,
-    justifyContent: "center",
     alignItems: "center",
-    marginTop: 60,
+    marginTop: 40,
+    marginBottom: 20,
   },
   logoImage: { width: 180, height: 180, borderRadius: 12 },
   mainTitle: {
