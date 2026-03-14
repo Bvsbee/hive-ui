@@ -1,7 +1,11 @@
 import { useState } from "react";
 import { useFetchAnime } from "../../services/mediaService";
-import { useFetchUserLists, normalizeMedia, useAddItemToList } from "../../services/listService";
-import useAuthStore from "../stores/useAuthStore"
+import {
+  useFetchUserLists,
+  normalizeMedia,
+  useAddItemToList,
+} from "../../services/listService";
+import useAuthStore from "../stores/useAuthStore";
 import {
   FlatList,
   Image,
@@ -14,9 +18,6 @@ import {
 } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
-
-
-
 const TrendingAnime = () => {
   const [selectedShow, setSelectedShow] = useState<any>(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -25,7 +26,9 @@ const TrendingAnime = () => {
   const user = useAuthStore((state: any) => state.user);
   const userGuid = user?.guid;
   const { data: anime, isLoading, isError, error } = useFetchAnime();
-  const {data : userLists, isLoading: listsLoading } = useFetchUserLists(userGuid ?? "");
+  const { data: userLists, isLoading: listsLoading } = useFetchUserLists(
+    userGuid ?? "",
+  );
   const stripHtml = (html: string) => html.replace(/<[^>]*>/g, "");
   const addItemMutation = useAddItemToList();
 
@@ -33,7 +36,6 @@ const TrendingAnime = () => {
     return <Text style={{ color: "white" }}>Loading Anime...</Text>;
   if (error) return <Text>Error loading Anime</Text>;
 
-  
   const handleAddToList = () => {
     if (!selectedList || !selectedShow) return;
 
@@ -42,16 +44,13 @@ const TrendingAnime = () => {
         {
           ...selectedShow,
           mediaType: "ANIME",
-          description: stripHtml(selectedShow.description)
+          description: stripHtml(selectedShow.description),
         },
-        selectedList
+        selectedList,
       );
-
-      console.log("Sending payload:", payload);
 
       addItemMutation.mutate(payload, {
         onSuccess: () => {
-          console.log("Successfully added!");
           setModalVisible(false);
         },
         onError: (err) => {
@@ -62,7 +61,6 @@ const TrendingAnime = () => {
       console.error("Normalization error:", err);
     }
   };
-
 
   return (
     <>
@@ -113,11 +111,13 @@ const TrendingAnime = () => {
                   <View style={styles.modalSheet}>
                     {selectedShow && (
                       <Text style={styles.bookTitle}>
-                        {selectedShow.title.english ?? selectedShow.title.romaji}                        </Text>
+                        {selectedShow.title.english ??
+                          selectedShow.title.romaji}{" "}
+                      </Text>
                     )}
 
                     {/* ROW: Poster Left --- Description Right */}
-                    <View style={styles.infoRow}> 
+                    <View style={styles.infoRow}>
                       {/* <View style={styles.mediaCard}>  */}
                       {selectedShow && (
                         <Image
@@ -128,24 +128,25 @@ const TrendingAnime = () => {
                         />
                       )}
 
-                      
                       <View style={styles.rightInfo}>
                         {selectedShow && (
                           <Text style={styles.ratingText}>
-                            ★{selectedShow.averageScore/10}
-                                {/*divide by 10 to scale down anime score from 100  */}
-                              {selectedShow.startDate && (
-                              ` • ${new Date(selectedShow.startDate.year).getFullYear()}`
-                            )}
+                            ★{selectedShow.averageScore / 10}
+                            {/*divide by 10 to scale down anime score from 100  */}
+                            {selectedShow.startDate &&
+                              ` • ${new Date(selectedShow.startDate.year).getFullYear()}`}
                           </Text>
                         )}
-                       <ScrollView style={{flex:1}} showsVerticalScrollIndicator={false}>
-                        {selectedShow && (
-                          <Text style={styles.bookDescription} >
-                            {stripHtml(selectedShow.description)}
-                          </Text>
-                        )}
-                      </ScrollView>
+                        <ScrollView
+                          style={{ flex: 1 }}
+                          showsVerticalScrollIndicator={false}
+                        >
+                          {selectedShow && (
+                            <Text style={styles.bookDescription}>
+                              {stripHtml(selectedShow.description)}
+                            </Text>
+                          )}
+                        </ScrollView>
                       </View>
                       {/* </View> */}
                     </View>
@@ -160,27 +161,30 @@ const TrendingAnime = () => {
                       >
                         <Text style={{ color: "#FFF" }}>
                           {selectedList
-                            ? userLists?.find((l: any) => l.guid === selectedList)
-                                ?.name
+                            ? userLists?.find(
+                                (l: any) => l.guid === selectedList,
+                              )?.name
                             : "Select a list..."}
                         </Text>
                       </TouchableOpacity>
 
                       {dropdownOpen && userLists?.length > 0 && (
                         <View style={styles.dropdownMenu}>
-                          <ScrollView style={{maxHeight: 150}}>
-                          {userLists.map((list: any) => (
-                            <TouchableOpacity
-                              key={list.guid}
-                              style={styles.dropdownItem}
-                              onPress={() => {
-                                setSelectedList(list.guid);
-                                setDropdownOpen(false);
-                              }}
-                            >
-                              <Text style={{ color: "#FFF" }}>{list.name}</Text>
-                            </TouchableOpacity>
-                          ))}
+                          <ScrollView style={{ maxHeight: 150 }}>
+                            {userLists.map((list: any) => (
+                              <TouchableOpacity
+                                key={list.guid}
+                                style={styles.dropdownItem}
+                                onPress={() => {
+                                  setSelectedList(list.guid);
+                                  setDropdownOpen(false);
+                                }}
+                              >
+                                <Text style={{ color: "#FFF" }}>
+                                  {list.name}
+                                </Text>
+                              </TouchableOpacity>
+                            ))}
                           </ScrollView>
                         </View>
                       )}
@@ -192,7 +196,6 @@ const TrendingAnime = () => {
                     >
                       <Text style={styles.addButtonText}>Add to List</Text>
                     </TouchableOpacity>
-
 
                     <TouchableOpacity
                       onPress={() => setModalVisible(false)}
@@ -333,7 +336,6 @@ const styles = StyleSheet.create({
     height: 200,
     borderRadius: 12,
     backgroundColor: "#273e79",
-    
   },
 
   rightInfo: {
@@ -356,8 +358,8 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     textAlign: "left",
     //maxHeight: 200,
-
-  }, ratingText: {
+  },
+  ratingText: {
     fontSize: 16,
     color: "#FFD700",
     fontWeight: "600",
@@ -372,7 +374,4 @@ const styles = StyleSheet.create({
   //   borderWidth: 1,
   //   borderColor: "rgba(255, 215, 0, 0.2)",
   // },
-
-
-
 });

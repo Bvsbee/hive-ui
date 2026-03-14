@@ -15,7 +15,6 @@ import useAuthStore from "../stores/useAuthStore";
 import { normalizeMedia, useAddItemToList } from "../../services/listService";
 import { ScrollView } from "react-native-gesture-handler";
 
-
 const TrendingMovies = () => {
   const [selectedShow, setSelectedShow] = useState<any>(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -24,7 +23,9 @@ const TrendingMovies = () => {
   const user = useAuthStore((state: any) => state.user);
   const userGuid = user?.guid;
   const { data: movies, isLoading, isError, error } = useFetchMovies();
-  const { data: userLists, isLoading: listsLoading } = useFetchUserLists(userGuid ?? "");
+  const { data: userLists, isLoading: listsLoading } = useFetchUserLists(
+    userGuid ?? "",
+  );
   const addItemMutation = useAddItemToList();
 
   const baseUrl = "https://image.tmdb.org/t/p/w500/";
@@ -39,16 +40,13 @@ const TrendingMovies = () => {
     try {
       const payload = normalizeMedia(selectedShow, selectedList);
 
-      console.log("Movie PAYLOAD:", payload);
-
       addItemMutation.mutate(payload, {
         onSuccess: () => {
-          console.log("Movie added!");
           setModalVisible(false);
         },
         onError: (err) => {
           console.error("Failed to add movie:", err);
-        }
+        },
       });
     } catch (err) {
       console.error("Normalization error:", err);
@@ -90,7 +88,6 @@ const TrendingMovies = () => {
             >
               {/* CLOSE MODAL WHEN CLICKING OUTSIDE */}
               <TouchableOpacity
-
                 activeOpacity={1}
                 style={styles.modalOverlay}
                 onPress={() => {
@@ -98,7 +95,9 @@ const TrendingMovies = () => {
                   setDropdownOpen(false);
                 }}
               >
-                <TouchableWithoutFeedback onPress={() => setDropdownOpen(false)}>
+                <TouchableWithoutFeedback
+                  onPress={() => setDropdownOpen(false)}
+                >
                   <View style={styles.modalSheet}>
                     {selectedShow && (
                       <Text style={styles.bookTitle}>{selectedShow.title}</Text>
@@ -108,27 +107,30 @@ const TrendingMovies = () => {
                     <View style={styles.infoRow}>
                       {selectedShow && (
                         <Image
-                          source={{ uri: `${baseUrl}${selectedShow.posterPath}` }}
+                          source={{
+                            uri: `${baseUrl}${selectedShow.posterPath}`,
+                          }}
                           style={styles.leftPoster}
                         />
                       )}
-
 
                       <View style={styles.rightInfo}>
                         {selectedShow && (
                           <Text style={styles.ratingText}>
                             ★ {selectedShow.rating.toFixed(1)}
-                            {selectedShow.releaseDate && (
-                              ` • ${new Date(selectedShow.releaseDate).getFullYear()}`
-                            )}
+                            {selectedShow.releaseDate &&
+                              ` • ${new Date(selectedShow.releaseDate).getFullYear()}`}
                           </Text>
                         )}
-                        <ScrollView style={{flex:1}} showsVerticalScrollIndicator={false}>
-                        {selectedShow && (
-                          <Text style={styles.bookDescription}>
-                            {selectedShow.overview}
-                          </Text>
-                        )}
+                        <ScrollView
+                          style={{ flex: 1 }}
+                          showsVerticalScrollIndicator={false}
+                        >
+                          {selectedShow && (
+                            <Text style={styles.bookDescription}>
+                              {selectedShow.overview}
+                            </Text>
+                          )}
                         </ScrollView>
                       </View>
                     </View>
@@ -143,34 +145,39 @@ const TrendingMovies = () => {
                       >
                         <Text style={{ color: "#FFF" }}>
                           {selectedList
-                            ? userLists?.find((l: any) => l.guid === selectedList)?.name
+                            ? userLists?.find(
+                                (l: any) => l.guid === selectedList,
+                              )?.name
                             : "Select a list..."}
-
                         </Text>
                       </TouchableOpacity>
 
                       {dropdownOpen && userLists?.length > 0 && (
                         <View style={styles.dropdownMenu}>
-                          <ScrollView style={{maxHeight: 150}}>
-                          {userLists.map((list: any) => (
-                            <TouchableOpacity
-                              key={list.guid}
-                              style={styles.dropdownItem}
-                              onPress={() => {
-                                setSelectedList(list.guid);
-                                setDropdownOpen(false);
-                              }}
-                            >
-
-                              <Text style={{ color: "#FFF" }}>{list.name}</Text>
-                            </TouchableOpacity>
-                          ))}
+                          <ScrollView style={{ maxHeight: 150 }}>
+                            {userLists.map((list: any) => (
+                              <TouchableOpacity
+                                key={list.guid}
+                                style={styles.dropdownItem}
+                                onPress={() => {
+                                  setSelectedList(list.guid);
+                                  setDropdownOpen(false);
+                                }}
+                              >
+                                <Text style={{ color: "#FFF" }}>
+                                  {list.name}
+                                </Text>
+                              </TouchableOpacity>
+                            ))}
                           </ScrollView>
                         </View>
                       )}
                     </View>
 
-                    <TouchableOpacity style={styles.addButton} onPress={handleAddMovieToList}>
+                    <TouchableOpacity
+                      style={styles.addButton}
+                      onPress={handleAddMovieToList}
+                    >
                       <Text style={styles.addButtonText}>Add to List</Text>
                     </TouchableOpacity>
 
@@ -181,11 +188,9 @@ const TrendingMovies = () => {
                       <Text style={styles.closeText}>Close</Text>
                     </TouchableOpacity>
                   </View>
-
                 </TouchableWithoutFeedback>
               </TouchableOpacity>
             </Modal>
-
           </>
         )}
       />
@@ -336,13 +341,11 @@ const styles = StyleSheet.create({
     color: "#EEE",
     lineHeight: 20,
     textAlign: "left",
-
-  }, ratingText: {
+  },
+  ratingText: {
     fontSize: 16,
     color: "#FFD700",
     fontWeight: "600",
     marginBottom: 12,
   },
-
-
 });

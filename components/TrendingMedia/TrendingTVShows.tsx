@@ -40,11 +40,8 @@ const TrendingTVShows = () => {
     try {
       const payload = normalizeMedia(selectedShow, selectedList);
 
-      console.log("show PAYLOAD:", payload);
-
       addItemMutation.mutate(payload, {
         onSuccess: () => {
-          console.log("Show added!");
           setModalVisible(false);
         },
         onError: (err) => {

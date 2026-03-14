@@ -43,7 +43,6 @@ export const useFetchBooks = () => {
 
 export const fetchAnime = async () => {
   const response = await hiveAPI.get("/ani-list/anime/popular");
- console.log(response);
   return response.data;
 };
 
