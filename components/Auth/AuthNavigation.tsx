@@ -1,4 +1,3 @@
-import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import SignUpPage from "../screens/SignUpPage";
 import StartupScreen from "../screens/StartupScreen";

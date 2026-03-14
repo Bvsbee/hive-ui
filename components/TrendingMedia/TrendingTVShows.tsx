@@ -11,11 +11,9 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
-import useAuthStore from "../stores/useAuthStore"
-import { getYear } from "../../services/mediaHelper";
+import useAuthStore from "../stores/useAuthStore";
 import { normalizeMedia, useAddItemToList } from "../../services/listService";
 import { ScrollView } from "react-native-gesture-handler";
-
 
 const TrendingTVShows = () => {
   const [selectedShow, setSelectedShow] = useState<any>(null);
@@ -25,9 +23,10 @@ const TrendingTVShows = () => {
   const user = useAuthStore((state: any) => state.user);
   const userGuid = user?.guid;
   const { data: tvShows, isLoading, isError, error } = useFetchTvShows();
-  const { data: userLists, isLoading: listsLoading } = useFetchUserLists(userGuid ?? "");
+  const { data: userLists, isLoading: listsLoading } = useFetchUserLists(
+    userGuid ?? "",
+  );
   const addItemMutation = useAddItemToList();
-
 
   const baseUrl = "https://image.tmdb.org/t/p/w500/";
 
@@ -50,7 +49,7 @@ const TrendingTVShows = () => {
         },
         onError: (err) => {
           console.error("Failed to add show:", err);
-        }
+        },
       });
     } catch (err) {
       console.error("Normalization error:", err);
@@ -93,7 +92,6 @@ const TrendingTVShows = () => {
             >
               {/* CLOSE MODAL WHEN CLICKING OUTSIDE */}
               <TouchableOpacity
-
                 activeOpacity={1}
                 style={styles.modalOverlay}
                 onPress={() => {
@@ -101,7 +99,9 @@ const TrendingTVShows = () => {
                   setDropdownOpen(false);
                 }}
               >
-                <TouchableWithoutFeedback onPress={() => setDropdownOpen(false)}>
+                <TouchableWithoutFeedback
+                  onPress={() => setDropdownOpen(false)}
+                >
                   <View style={styles.modalSheet}>
                     {selectedShow && (
                       <Text style={styles.bookTitle}>{selectedShow.name}</Text>
@@ -111,27 +111,30 @@ const TrendingTVShows = () => {
                     <View style={styles.infoRow}>
                       {selectedShow && (
                         <Image
-                          source={{ uri: `${baseUrl}${selectedShow.posterPath}` }}
+                          source={{
+                            uri: `${baseUrl}${selectedShow.posterPath}`,
+                          }}
                           style={styles.leftPoster}
                         />
                       )}
-
 
                       <View style={styles.rightInfo}>
                         {selectedShow && (
                           <Text style={styles.ratingText}>
                             ★ {selectedShow.rating.toFixed(1)}
-                            {selectedShow.firstAirDate && (
-                              ` • ${new Date(selectedShow.firstAirDate).getFullYear()}`
-                            )}
+                            {selectedShow.firstAirDate &&
+                              ` • ${new Date(selectedShow.firstAirDate).getFullYear()}`}
                           </Text>
                         )}
-                        <ScrollView style={{flex:1}} showsVerticalScrollIndicator={false}>
-                        {selectedShow && (
-                          <Text style={styles.bookDescription}>
-                            {selectedShow.overview}
-                          </Text>
-                        )}
+                        <ScrollView
+                          style={{ flex: 1 }}
+                          showsVerticalScrollIndicator={false}
+                        >
+                          {selectedShow && (
+                            <Text style={styles.bookDescription}>
+                              {selectedShow.overview}
+                            </Text>
+                          )}
                         </ScrollView>
                       </View>
                     </View>
@@ -146,35 +149,39 @@ const TrendingTVShows = () => {
                       >
                         <Text style={{ color: "#FFF" }}>
                           {selectedList
-                            ? userLists?.find((l: any) => l.guid === selectedList)?.name
+                            ? userLists?.find(
+                                (l: any) => l.guid === selectedList,
+                              )?.name
                             : "Select a list..."}
-
                         </Text>
                       </TouchableOpacity>
 
                       {dropdownOpen && userLists?.length > 0 && (
                         <View style={styles.dropdownMenu}>
-                          <ScrollView style={{maxHeight: 150}}>
-                          {userLists.map((list: any) => (
-                            <TouchableOpacity
-                              key={list.guid}
-                              style={styles.dropdownItem}
-                              onPress={() => {
-                                setSelectedList(list.guid);
-                                setDropdownOpen(false);
-                              }}
-                            >
-
-                              <Text style={{ color: "#FFF" }}>{list.name}</Text>
-                            </TouchableOpacity>
-                          ))}
+                          <ScrollView style={{ maxHeight: 150 }}>
+                            {userLists.map((list: any) => (
+                              <TouchableOpacity
+                                key={list.guid}
+                                style={styles.dropdownItem}
+                                onPress={() => {
+                                  setSelectedList(list.guid);
+                                  setDropdownOpen(false);
+                                }}
+                              >
+                                <Text style={{ color: "#FFF" }}>
+                                  {list.name}
+                                </Text>
+                              </TouchableOpacity>
+                            ))}
                           </ScrollView>
                         </View>
                       )}
                     </View>
 
-
-                    <TouchableOpacity style={styles.addButton} onPress={handleAddMShowToList}>
+                    <TouchableOpacity
+                      style={styles.addButton}
+                      onPress={handleAddMShowToList}
+                    >
                       <Text style={styles.addButtonText}>Add to List</Text>
                     </TouchableOpacity>
 
@@ -185,11 +192,9 @@ const TrendingTVShows = () => {
                       <Text style={styles.closeText}>Close</Text>
                     </TouchableOpacity>
                   </View>
-
                 </TouchableWithoutFeedback>
               </TouchableOpacity>
             </Modal>
-
           </>
         )}
       />
@@ -340,13 +345,11 @@ const styles = StyleSheet.create({
     color: "#EEE",
     lineHeight: 20,
     textAlign: "left",
-
-  }, ratingText: {
+  },
+  ratingText: {
     fontSize: 16,
     color: "#FFD700",
     fontWeight: "600",
     marginBottom: 12,
   },
-
-
 });

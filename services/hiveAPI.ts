@@ -1,7 +1,10 @@
+import { API_URL } from "./../config/api";
 import axios from "axios";
 
+console.log("API_URL:", API_URL);
+
 const hiveAPI = axios.create({
-  baseURL: process.env.API_URL || "http://localhost:3000",
+  baseURL: API_URL,
   headers: {
     "Content-Type": "application/json",
   },
