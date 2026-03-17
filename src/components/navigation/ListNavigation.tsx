@@ -1,7 +1,7 @@
 import React from "react";
 import {createStackNavigator} from "@react-navigation/stack";
-import ListScreen from "../screens/ListScreen";
-import ListDetailScreen from "../screens/ListDetailScreen";
+import ListScreen from "../../src/screens/ListScreen";
+import ListDetailScreen from "../../src/screens/ListDetailScreen";
 import {ListStackParamList} from "../../models/Navigation";
 
 const Stack = createStackNavigator<ListStackParamList>();

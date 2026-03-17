@@ -16,9 +16,11 @@ import { LinearGradient } from "expo-linear-gradient";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { AuthStackParamList } from "../../models/Navigation";
 import { ListStackParamList } from "../../models/Navigation";
-import useAuthStore from "../stores/useAuthStore";
 import { useFetchRecentlyAddedMedia, useFetchUserLists } from "../../services/listService";
-import CreateMediaListModal from "../CreateList/CreateMediaListModal";
+import CreateMediaListModal from "../../components/CreateList/CreateMediaListModal";
+import useAuthStore from "../stores/useAuthStore";
+
+
 
 export default function ListScreen() {
 
