@@ -55,7 +55,6 @@ export default function App() {
                 component={HomeScreen}
                 options={{ headerShown: false }}
               />
-              {/* <Tab.Screen name="List" component={ListScreen} /> */}
               <Tab.Screen name="List" component={ListNavigation} />
             </Tab.Navigator>
           ) : (
