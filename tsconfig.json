@@ -4,5 +4,5 @@
     "strict": true,
     "types": ["node"]
   },
-  "include": ["src", "App.tsx"]
+  "include": ["src", "App.tsx", "**/*.ts", "**/*.tsx"]
 }
