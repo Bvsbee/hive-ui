@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { useFetchBooks } from "../../services/mediaService";
-import { useFetchUserLists } from "../../services/listService";
-import useAuthStore from "../stores/useAuthStore";
-import { normalizeMedia, useAddItemToList } from "../../services/listService";
-
+import { useFetchAnime } from "../../services/mediaService";
+import {
+  useFetchUserLists,
+  normalizeMedia,
+  useAddItemToList,
+} from "../../services/listService";
 import {
   FlatList,
   Image,
@@ -15,38 +16,45 @@ import {
   View,
 } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
+import useAuthStore from "../../stores/useAuthStore";
 
-const TrendingBooks = () => {
-  const [selectedBook, setSelectedBook] = useState<any>(null);
+const TrendingAnime = () => {
+  const [selectedShow, setSelectedShow] = useState<any>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
   const [selectedList, setSelectedList] = useState<string>("");
   const user = useAuthStore((state: any) => state.user);
-  const addItemMutation = useAddItemToList();
-
   const userGuid = user?.guid;
-
-  const { data: books, isLoading, isError, error } = useFetchBooks();
+  const { data: anime, isLoading, isError, error } = useFetchAnime();
   const { data: userLists, isLoading: listsLoading } = useFetchUserLists(
     userGuid ?? "",
   );
+  const stripHtml = (html: string) => html.replace(/<[^>]*>/g, "");
+  const addItemMutation = useAddItemToList();
 
   if (isLoading)
-    return <Text style={{ color: "white" }}>Loading Books...</Text>;
-  if (error) return <Text>Error loading Books</Text>;
+    return <Text style={{ color: "white" }}>Loading Anime...</Text>;
+  if (error) return <Text>Error loading Anime</Text>;
 
-  const handleAddBookToList = () => {
-    if (!selectedList || !selectedBook) return;
+  const handleAddToList = () => {
+    if (!selectedList || !selectedShow) return;
 
     try {
-      const payload = normalizeMedia(selectedBook, selectedList);
+      const payload = normalizeMedia(
+        {
+          ...selectedShow,
+          mediaType: "ANIME",
+          description: stripHtml(selectedShow.description),
+        },
+        selectedList,
+      );
 
       addItemMutation.mutate(payload, {
         onSuccess: () => {
           setModalVisible(false);
         },
         onError: (err) => {
-          console.error("Failed to add book:", err);
+          console.error("Failed to add:", err);
         },
       });
     } catch (err) {
@@ -59,11 +67,10 @@ const TrendingBooks = () => {
       <Text
         style={{ fontSize: 18, fontWeight: "bold", margin: 10, color: "white" }}
       >
-        📚 Trending Books
+        ⚡ Trending Anime
       </Text>
-
       <FlatList
-        data={books}
+        data={anime}
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{ paddingHorizontal: 10 }}
@@ -71,14 +78,14 @@ const TrendingBooks = () => {
           <>
             <TouchableOpacity
               onPress={(e) => {
-                setSelectedBook(item);
+                setSelectedShow(item);
                 setModalVisible(true);
               }}
               style={styles.card}
             >
               <Image
                 source={{
-                  uri: `${item.book_image}`,
+                  uri: `${item.coverImage.medium}`,
                 }}
                 style={styles.poster}
               />
@@ -102,37 +109,46 @@ const TrendingBooks = () => {
                   onPress={() => setDropdownOpen(false)}
                 >
                   <View style={styles.modalSheet}>
-                    {selectedBook && (
-                      <Text style={styles.bookTitle}>{selectedBook.title}</Text>
+                    {selectedShow && (
+                      <Text style={styles.bookTitle}>
+                        {selectedShow.title.english ??
+                          selectedShow.title.romaji}{" "}
+                      </Text>
                     )}
 
                     {/* ROW: Poster Left --- Description Right */}
                     <View style={styles.infoRow}>
-                      {selectedBook && (
+                      {/* <View style={styles.mediaCard}>  */}
+                      {selectedShow && (
                         <Image
-                          source={{ uri: selectedBook.book_image }}
+                          source={{
+                            uri: `${selectedShow.coverImage.medium}`,
+                          }}
                           style={styles.leftPoster}
                         />
                       )}
 
                       <View style={styles.rightInfo}>
-                        {selectedBook && (
+                        {selectedShow && (
                           <Text style={styles.ratingText}>
-                            Author: {selectedBook.author}
+                            ★{selectedShow.averageScore / 10}
+                            {/*divide by 10 to scale down anime score from 100  */}
+                            {selectedShow.startDate &&
+                              ` • ${new Date(selectedShow.startDate.year).getFullYear()}`}
                           </Text>
                         )}
-
                         <ScrollView
                           style={{ flex: 1 }}
                           showsVerticalScrollIndicator={false}
                         >
-                          {selectedBook && (
+                          {selectedShow && (
                             <Text style={styles.bookDescription}>
-                              {selectedBook.description}
+                              {stripHtml(selectedShow.description)}
                             </Text>
                           )}
                         </ScrollView>
                       </View>
+                      {/* </View> */}
                     </View>
 
                     {/* DROPDOWN + Add to List BELOW the row */}
@@ -176,7 +192,7 @@ const TrendingBooks = () => {
 
                     <TouchableOpacity
                       style={styles.addButton}
-                      onPress={handleAddBookToList}
+                      onPress={handleAddToList}
                     >
                       <Text style={styles.addButtonText}>Add to List</Text>
                     </TouchableOpacity>
@@ -198,7 +214,7 @@ const TrendingBooks = () => {
   );
 };
 
-export default TrendingBooks;
+export default TrendingAnime;
 
 const styles = StyleSheet.create({
   poster: {
@@ -312,7 +328,7 @@ const styles = StyleSheet.create({
     width: "100%",
     marginTop: 10,
     marginBottom: 20,
-    gap: 16,
+    //gap: 16,
   },
 
   leftPoster: {
@@ -341,6 +357,7 @@ const styles = StyleSheet.create({
     color: "#EEE",
     lineHeight: 20,
     textAlign: "left",
+    //maxHeight: 200,
   },
   ratingText: {
     fontSize: 16,
@@ -348,4 +365,13 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     marginBottom: 12,
   },
+  // mediaCard: {
+  //   flexDirection: "row",
+  //   //backgroundColor: "rgba(255, 255, 255, 0.05)",
+  //   borderRadius: 15,
+  //   padding: 15,
+  //   marginBottom: 15,
+  //   borderWidth: 1,
+  //   borderColor: "rgba(255, 215, 0, 0.2)",
+  // },
 });

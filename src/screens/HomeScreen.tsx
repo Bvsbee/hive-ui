@@ -12,19 +12,20 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import useAuthStore from "../stores/useAuthStore";
+
 import {
   fetchAnime,
   fetchBooks,
   fetchMovies,
   fetchTvShows,
-} from "../../services/mediaService";
+} from "../services/mediaService";
 import { useQueryClient } from "@tanstack/react-query";
-import TrendingTVShows from "../TrendingMedia/TrendingTVShows";
-import TrendingMovies from "../TrendingMedia/TrendingMovies";
-import TrendingAnime from "../TrendingMedia/TrendingAnime";
-import TrendingBooks from "../TrendingMedia/TrendingBooks";
+import TrendingTVShows from "../components/TrendingMedia/TrendingTVShows";
+import TrendingMovies from "../components/TrendingMedia/TrendingMovies";
+import TrendingAnime from "../components/TrendingMedia/TrendingAnime";
+import TrendingBooks from "../components/TrendingMedia/TrendingBooks";
+import CreateMediaListModal from "../components/CreateList/CreateMediaListModal";
 import { ScrollView } from "react-native-gesture-handler";
-import CreateMediaListModal from "../CreateList/CreateMediaListModal";
 
 export default function HomeScreen() {
   const user = useAuthStore((state) => state.user);

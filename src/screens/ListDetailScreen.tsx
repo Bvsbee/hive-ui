@@ -11,15 +11,15 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRoute, RouteProp } from "@react-navigation/native";
-import { ListStackParamList } from "../../models/Navigation";
+import { ListStackParamList } from "../models/Navigation";
 import useAuthStore from "../stores/useAuthStore";
-import { useFetchUserLists } from "../../services/listService";
+import { useFetchUserLists } from "../services/listService";
 import {
   getImageUrl,
   getMediaTypeLabel,
   getYear,
   getRating,
-} from "../../services/mediaHelper";
+} from "../services/mediaHelper";
 
 type ListDetailScreenProps = RouteProp<ListStackParamList, "ListDetailScreen">;
 
@@ -113,7 +113,6 @@ export default function ListDetailScreen() {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollList}
         >
-        
           {/* list items */}
           {isLoading ? (
             <View style={styles.loadingContainer}>
@@ -186,7 +185,7 @@ export default function ListDetailScreen() {
                               year: "numeric",
                               month: "short",
                               day: "numeric",
-                            }
+                            },
                           )
                         : ""}
                     </Text>

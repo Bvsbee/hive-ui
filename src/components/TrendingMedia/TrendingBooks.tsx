@@ -1,6 +1,9 @@
 import { useState } from "react";
-import { useFetchTvShows } from "../../services/mediaService";
+import { useFetchBooks } from "../../services/mediaService";
 import { useFetchUserLists } from "../../services/listService";
+import useAuthStore from "../../stores/useAuthStore";
+import { normalizeMedia, useAddItemToList } from "../../services/listService";
+
 import {
   FlatList,
   Image,
@@ -11,56 +14,56 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
-import useAuthStore from "../stores/useAuthStore";
-import { normalizeMedia, useAddItemToList } from "../../services/listService";
 import { ScrollView } from "react-native-gesture-handler";
 
-const TrendingTVShows = () => {
-  const [selectedShow, setSelectedShow] = useState<any>(null);
-  const [modalVisible, setModalVisible] = useState<boolean>(false);
+const TrendingBooks = () => {
+  const [selectedBook, setSelectedBook] = useState<any>(null);
+  const [modalVisible, setModalVisible] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
   const [selectedList, setSelectedList] = useState<string>("");
   const user = useAuthStore((state: any) => state.user);
+  const addItemMutation = useAddItemToList();
+
   const userGuid = user?.guid;
-  const { data: tvShows, isLoading, isError, error } = useFetchTvShows();
+
+  const { data: books, isLoading, isError, error } = useFetchBooks();
   const { data: userLists, isLoading: listsLoading } = useFetchUserLists(
     userGuid ?? "",
   );
-  const addItemMutation = useAddItemToList();
-
-  const baseUrl = "https://image.tmdb.org/t/p/w500/";
 
   if (isLoading)
-    return <Text style={{ color: "white" }}>Loading TV Shows...</Text>;
-  if (error) return <Text>Error loading TV Shows</Text>;
+    return <Text style={{ color: "white" }}>Loading Books...</Text>;
+  if (error) return <Text>Error loading Books</Text>;
 
-  const handleAddMShowToList = () => {
-    if (!selectedList || !selectedShow) return;
+  const handleAddBookToList = () => {
+    if (!selectedList || !selectedBook) return;
 
     try {
-      const payload = normalizeMedia(selectedShow, selectedList);
+      const payload = normalizeMedia(selectedBook, selectedList);
 
       addItemMutation.mutate(payload, {
         onSuccess: () => {
           setModalVisible(false);
         },
         onError: (err) => {
-          console.error("Failed to add show:", err);
+          console.error("Failed to add book:", err);
         },
       });
     } catch (err) {
       console.error("Normalization error:", err);
     }
   };
+
   return (
     <>
       <Text
         style={{ fontSize: 18, fontWeight: "bold", margin: 10, color: "white" }}
       >
-        🎬 Trending TV Shows
+        📚 Trending Books
       </Text>
+
       <FlatList
-        data={tvShows}
+        data={books}
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{ paddingHorizontal: 10 }}
@@ -68,19 +71,18 @@ const TrendingTVShows = () => {
           <>
             <TouchableOpacity
               onPress={(e) => {
-                setSelectedShow(item);
+                setSelectedBook(item);
                 setModalVisible(true);
               }}
               style={styles.card}
             >
               <Image
                 source={{
-                  uri: `${baseUrl}${item.posterPath}`,
+                  uri: `${item.book_image}`,
                 }}
                 style={styles.poster}
               />
             </TouchableOpacity>
-
             <Modal
               visible={modalVisible}
               transparent
@@ -100,36 +102,33 @@ const TrendingTVShows = () => {
                   onPress={() => setDropdownOpen(false)}
                 >
                   <View style={styles.modalSheet}>
-                    {selectedShow && (
-                      <Text style={styles.bookTitle}>{selectedShow.name}</Text>
+                    {selectedBook && (
+                      <Text style={styles.bookTitle}>{selectedBook.title}</Text>
                     )}
 
                     {/* ROW: Poster Left --- Description Right */}
                     <View style={styles.infoRow}>
-                      {selectedShow && (
+                      {selectedBook && (
                         <Image
-                          source={{
-                            uri: `${baseUrl}${selectedShow.posterPath}`,
-                          }}
+                          source={{ uri: selectedBook.book_image }}
                           style={styles.leftPoster}
                         />
                       )}
 
                       <View style={styles.rightInfo}>
-                        {selectedShow && (
+                        {selectedBook && (
                           <Text style={styles.ratingText}>
-                            ★ {selectedShow.rating.toFixed(1)}
-                            {selectedShow.firstAirDate &&
-                              ` • ${new Date(selectedShow.firstAirDate).getFullYear()}`}
+                            Author: {selectedBook.author}
                           </Text>
                         )}
+
                         <ScrollView
                           style={{ flex: 1 }}
                           showsVerticalScrollIndicator={false}
                         >
-                          {selectedShow && (
+                          {selectedBook && (
                             <Text style={styles.bookDescription}>
-                              {selectedShow.overview}
+                              {selectedBook.description}
                             </Text>
                           )}
                         </ScrollView>
@@ -177,7 +176,7 @@ const TrendingTVShows = () => {
 
                     <TouchableOpacity
                       style={styles.addButton}
-                      onPress={handleAddMShowToList}
+                      onPress={handleAddBookToList}
                     >
                       <Text style={styles.addButtonText}>Add to List</Text>
                     </TouchableOpacity>
@@ -199,7 +198,7 @@ const TrendingTVShows = () => {
   );
 };
 
-export default TrendingTVShows;
+export default TrendingBooks;
 
 const styles = StyleSheet.create({
   poster: {

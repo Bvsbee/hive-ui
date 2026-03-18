@@ -1,11 +1,6 @@
 import { useState } from "react";
-import { useFetchAnime } from "../../services/mediaService";
-import {
-  useFetchUserLists,
-  normalizeMedia,
-  useAddItemToList,
-} from "../../services/listService";
-import useAuthStore from "../stores/useAuthStore";
+import { useFetchMovies } from "../../services/mediaService";
+import { useFetchUserLists } from "../../services/listService";
 import {
   FlatList,
   Image,
@@ -16,61 +11,56 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
+import useAuthStore from "../../stores/useAuthStore";
+import { normalizeMedia, useAddItemToList } from "../../services/listService";
 import { ScrollView } from "react-native-gesture-handler";
 
-const TrendingAnime = () => {
+const TrendingMovies = () => {
   const [selectedShow, setSelectedShow] = useState<any>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
   const [selectedList, setSelectedList] = useState<string>("");
   const user = useAuthStore((state: any) => state.user);
   const userGuid = user?.guid;
-  const { data: anime, isLoading, isError, error } = useFetchAnime();
+  const { data: movies, isLoading, isError, error } = useFetchMovies();
   const { data: userLists, isLoading: listsLoading } = useFetchUserLists(
     userGuid ?? "",
   );
-  const stripHtml = (html: string) => html.replace(/<[^>]*>/g, "");
   const addItemMutation = useAddItemToList();
 
-  if (isLoading)
-    return <Text style={{ color: "white" }}>Loading Anime...</Text>;
-  if (error) return <Text>Error loading Anime</Text>;
+  const baseUrl = "https://image.tmdb.org/t/p/w500/";
 
-  const handleAddToList = () => {
+  if (isLoading)
+    return <Text style={{ color: "white" }}>Loading Movies...</Text>;
+  if (error) return <Text>Error loading Movies</Text>;
+
+  const handleAddMovieToList = () => {
     if (!selectedList || !selectedShow) return;
 
     try {
-      const payload = normalizeMedia(
-        {
-          ...selectedShow,
-          mediaType: "ANIME",
-          description: stripHtml(selectedShow.description),
-        },
-        selectedList,
-      );
+      const payload = normalizeMedia(selectedShow, selectedList);
 
       addItemMutation.mutate(payload, {
         onSuccess: () => {
           setModalVisible(false);
         },
         onError: (err) => {
-          console.error("Failed to add:", err);
+          console.error("Failed to add movie:", err);
         },
       });
     } catch (err) {
       console.error("Normalization error:", err);
     }
   };
-
   return (
     <>
       <Text
         style={{ fontSize: 18, fontWeight: "bold", margin: 10, color: "white" }}
       >
-        ⚡ Trending Anime
+        📺 Trending Movies
       </Text>
       <FlatList
-        data={anime}
+        data={movies}
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{ paddingHorizontal: 10 }}
@@ -85,7 +75,7 @@ const TrendingAnime = () => {
             >
               <Image
                 source={{
-                  uri: `${item.coverImage.medium}`,
+                  uri: `${baseUrl}${item.posterPath}`,
                 }}
                 style={styles.poster}
               />
@@ -110,19 +100,15 @@ const TrendingAnime = () => {
                 >
                   <View style={styles.modalSheet}>
                     {selectedShow && (
-                      <Text style={styles.bookTitle}>
-                        {selectedShow.title.english ??
-                          selectedShow.title.romaji}{" "}
-                      </Text>
+                      <Text style={styles.bookTitle}>{selectedShow.title}</Text>
                     )}
 
                     {/* ROW: Poster Left --- Description Right */}
                     <View style={styles.infoRow}>
-                      {/* <View style={styles.mediaCard}>  */}
                       {selectedShow && (
                         <Image
                           source={{
-                            uri: `${selectedShow.coverImage.medium}`,
+                            uri: `${baseUrl}${selectedShow.posterPath}`,
                           }}
                           style={styles.leftPoster}
                         />
@@ -131,10 +117,9 @@ const TrendingAnime = () => {
                       <View style={styles.rightInfo}>
                         {selectedShow && (
                           <Text style={styles.ratingText}>
-                            ★{selectedShow.averageScore / 10}
-                            {/*divide by 10 to scale down anime score from 100  */}
-                            {selectedShow.startDate &&
-                              ` • ${new Date(selectedShow.startDate.year).getFullYear()}`}
+                            ★ {selectedShow.rating.toFixed(1)}
+                            {selectedShow.releaseDate &&
+                              ` • ${new Date(selectedShow.releaseDate).getFullYear()}`}
                           </Text>
                         )}
                         <ScrollView
@@ -143,12 +128,11 @@ const TrendingAnime = () => {
                         >
                           {selectedShow && (
                             <Text style={styles.bookDescription}>
-                              {stripHtml(selectedShow.description)}
+                              {selectedShow.overview}
                             </Text>
                           )}
                         </ScrollView>
                       </View>
-                      {/* </View> */}
                     </View>
 
                     {/* DROPDOWN + Add to List BELOW the row */}
@@ -192,7 +176,7 @@ const TrendingAnime = () => {
 
                     <TouchableOpacity
                       style={styles.addButton}
-                      onPress={handleAddToList}
+                      onPress={handleAddMovieToList}
                     >
                       <Text style={styles.addButtonText}>Add to List</Text>
                     </TouchableOpacity>
@@ -214,7 +198,7 @@ const TrendingAnime = () => {
   );
 };
 
-export default TrendingAnime;
+export default TrendingMovies;
 
 const styles = StyleSheet.create({
   poster: {
@@ -328,7 +312,7 @@ const styles = StyleSheet.create({
     width: "100%",
     marginTop: 10,
     marginBottom: 20,
-    //gap: 16,
+    gap: 16,
   },
 
   leftPoster: {
@@ -357,7 +341,6 @@ const styles = StyleSheet.create({
     color: "#EEE",
     lineHeight: 20,
     textAlign: "left",
-    //maxHeight: 200,
   },
   ratingText: {
     fontSize: 16,
@@ -365,13 +348,4 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     marginBottom: 12,
   },
-  // mediaCard: {
-  //   flexDirection: "row",
-  //   //backgroundColor: "rgba(255, 255, 255, 0.05)",
-  //   borderRadius: 15,
-  //   padding: 15,
-  //   marginBottom: 15,
-  //   borderWidth: 1,
-  //   borderColor: "rgba(255, 215, 0, 0.2)",
-  // },
 });

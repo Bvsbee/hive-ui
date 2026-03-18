@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useFetchMovies } from "../../services/mediaService";
+import { useFetchTvShows } from "../../services/mediaService";
 import { useFetchUserLists } from "../../services/listService";
 import {
   FlatList,
@@ -11,18 +11,18 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
-import useAuthStore from "../stores/useAuthStore";
+import useAuthStore from "../../stores/useAuthStore";
 import { normalizeMedia, useAddItemToList } from "../../services/listService";
 import { ScrollView } from "react-native-gesture-handler";
 
-const TrendingMovies = () => {
+const TrendingTVShows = () => {
   const [selectedShow, setSelectedShow] = useState<any>(null);
-  const [modalVisible, setModalVisible] = useState(false);
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
   const [selectedList, setSelectedList] = useState<string>("");
   const user = useAuthStore((state: any) => state.user);
   const userGuid = user?.guid;
-  const { data: movies, isLoading, isError, error } = useFetchMovies();
+  const { data: tvShows, isLoading, isError, error } = useFetchTvShows();
   const { data: userLists, isLoading: listsLoading } = useFetchUserLists(
     userGuid ?? "",
   );
@@ -31,10 +31,10 @@ const TrendingMovies = () => {
   const baseUrl = "https://image.tmdb.org/t/p/w500/";
 
   if (isLoading)
-    return <Text style={{ color: "white" }}>Loading Movies...</Text>;
-  if (error) return <Text>Error loading Movies</Text>;
+    return <Text style={{ color: "white" }}>Loading TV Shows...</Text>;
+  if (error) return <Text>Error loading TV Shows</Text>;
 
-  const handleAddMovieToList = () => {
+  const handleAddMShowToList = () => {
     if (!selectedList || !selectedShow) return;
 
     try {
@@ -45,7 +45,7 @@ const TrendingMovies = () => {
           setModalVisible(false);
         },
         onError: (err) => {
-          console.error("Failed to add movie:", err);
+          console.error("Failed to add show:", err);
         },
       });
     } catch (err) {
@@ -57,10 +57,10 @@ const TrendingMovies = () => {
       <Text
         style={{ fontSize: 18, fontWeight: "bold", margin: 10, color: "white" }}
       >
-        📺 Trending Movies
+        🎬 Trending TV Shows
       </Text>
       <FlatList
-        data={movies}
+        data={tvShows}
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{ paddingHorizontal: 10 }}
@@ -80,6 +80,7 @@ const TrendingMovies = () => {
                 style={styles.poster}
               />
             </TouchableOpacity>
+
             <Modal
               visible={modalVisible}
               transparent
@@ -100,7 +101,7 @@ const TrendingMovies = () => {
                 >
                   <View style={styles.modalSheet}>
                     {selectedShow && (
-                      <Text style={styles.bookTitle}>{selectedShow.title}</Text>
+                      <Text style={styles.bookTitle}>{selectedShow.name}</Text>
                     )}
 
                     {/* ROW: Poster Left --- Description Right */}
@@ -118,8 +119,8 @@ const TrendingMovies = () => {
                         {selectedShow && (
                           <Text style={styles.ratingText}>
                             ★ {selectedShow.rating.toFixed(1)}
-                            {selectedShow.releaseDate &&
-                              ` • ${new Date(selectedShow.releaseDate).getFullYear()}`}
+                            {selectedShow.firstAirDate &&
+                              ` • ${new Date(selectedShow.firstAirDate).getFullYear()}`}
                           </Text>
                         )}
                         <ScrollView
@@ -176,7 +177,7 @@ const TrendingMovies = () => {
 
                     <TouchableOpacity
                       style={styles.addButton}
-                      onPress={handleAddMovieToList}
+                      onPress={handleAddMShowToList}
                     >
                       <Text style={styles.addButtonText}>Add to List</Text>
                     </TouchableOpacity>
@@ -198,7 +199,7 @@ const TrendingMovies = () => {
   );
 };
 
-export default TrendingMovies;
+export default TrendingTVShows;
 
 const styles = StyleSheet.create({
   poster: {
