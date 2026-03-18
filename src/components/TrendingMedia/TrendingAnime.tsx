@@ -5,7 +5,6 @@ import {
   normalizeMedia,
   useAddItemToList,
 } from "../../services/listService";
-import useAuthStore from "../stores/useAuthStore";
 import {
   FlatList,
   Image,
@@ -17,6 +16,7 @@ import {
   View,
 } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
+import useAuthStore from "../../stores/useAuthStore";
 
 const TrendingAnime = () => {
   const [selectedShow, setSelectedShow] = useState<any>(null);

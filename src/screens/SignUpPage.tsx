@@ -12,12 +12,12 @@ import {
   BackHandler,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { UserModel } from "../../models/UserModel";
-import AccountInfo from "../AccountCreation/AccountInfo";
-import ProfileSetup from "../AccountCreation/ProfileSetup";
+import { UserModel } from "../models/UserModel";
+import AccountInfo from "../components/AccountCreation/AccountInfo";
+import ProfileSetup from "../components/AccountCreation/ProfileSetup";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { AuthStackParamList } from "../../models/Navigation";
-import { useCreateUser } from "../../services/authService";
+import { AuthStackParamList } from "../models/Navigation";
+import { useCreateUser } from "../services/authService";
 
 export default function SignUpPage() {
   const [newUser, setNewUser] = useState<UserModel>({
@@ -76,7 +76,7 @@ export default function SignUpPage() {
 
     const backHandler = BackHandler.addEventListener(
       "hardwareBackPress",
-      backAction
+      backAction,
     );
 
     return () => backHandler.remove();
@@ -89,7 +89,7 @@ export default function SignUpPage() {
     } catch (error: any) {
       Alert.alert(
         "Signup failed",
-        error.response?.data?.message || error.message
+        error.response?.data?.message || error.message,
       );
     }
   };

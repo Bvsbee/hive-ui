@@ -1,8 +1,16 @@
 import { useState } from "react";
-import { Modal, StyleSheet, Text, TouchableOpacity, Alert, View, TextInput, ActivityIndicator } from "react-native";
-import useAuthStore from "../stores/useAuthStore";
+import {
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  Alert,
+  View,
+  TextInput,
+  ActivityIndicator,
+} from "react-native";
 import { useCreateList } from "../../services/listService";
-
+import useAuthStore from "../../stores/useAuthStore";
 
 const CreateMediaListModal = () => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
@@ -12,17 +20,17 @@ const CreateMediaListModal = () => {
   //const{mutate: createList} = useCreateList();
   const { mutate: createList, isPending } = useCreateList();
 
-  const handleCreate=() => {
-
+  const handleCreate = () => {
     //createList({userGuid: user.guid, name: listName, icon: icon});
     createList(
-      { 
+      {
         userGuid: user.guid,
         name: listName,
         icon: icon,
         allowedMediaTypes: ["MOVIE", "TV", "BOOK", "ANIME"],
       },
-      { onSuccess: () => {
+      {
+        onSuccess: () => {
           setModalVisible(false);
           setListName("");
           setIcon("");
@@ -30,14 +38,13 @@ const CreateMediaListModal = () => {
         onError: (error: any) => {
           Alert.alert(
             "Error",
-            error.response?.data?.message || error.message || "Failed to create list"
+            error.response?.data?.message ||
+              error.message ||
+              "Failed to create list",
           );
         },
-      }
+      },
     );
-
-
-
   };
 
   return (
@@ -57,15 +64,14 @@ const CreateMediaListModal = () => {
         animationType="slide"
         onRequestClose={() => setModalVisible(false)}
       >
+        <View style={styles.modal}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Create New List</Text>
 
-      <View style={styles.modal}>
-        <View style={styles.modalContent}> 
-          <Text style={styles.modalTitle}>
-            Create New List</Text>
-
-            <Text style={{fontSize: 16,color: "#f9f6deff", marginBottom: 8}}>
-              List Name:</Text>
-            <TextInput 
+            <Text style={{ fontSize: 16, color: "#f9f6deff", marginBottom: 8 }}>
+              List Name:
+            </Text>
+            <TextInput
               style={styles.input}
               placeholder="Enter list name"
               placeholderTextColor="#b0b0b0"
@@ -73,8 +79,9 @@ const CreateMediaListModal = () => {
               onChangeText={setListName}
             />
 
-            <Text style={{fontSize: 16,color: "#f9f6deff", marginBottom: 8}}>
-              Emoji Icon </Text>
+            <Text style={{ fontSize: 16, color: "#f9f6deff", marginBottom: 8 }}>
+              Emoji Icon{" "}
+            </Text>
             <TextInput
               style={styles.input}
               placeholder="Enter emoji Icon"
@@ -85,7 +92,7 @@ const CreateMediaListModal = () => {
             />
 
             <View style={styles.buttons}>
-                <TouchableOpacity
+              <TouchableOpacity
                 style={[styles.button, styles.cancelButton]}
                 onPress={() => {
                   setModalVisible(false);
@@ -109,12 +116,8 @@ const CreateMediaListModal = () => {
                 )}
               </TouchableOpacity>
             </View>
-            
-
-
+          </View>
         </View>
-        
-        </View>  
       </Modal>
     </>
   );
@@ -149,13 +152,15 @@ const styles = StyleSheet.create({
     width: "85%",
     borderWidth: 1,
     borderColor: "rgba(255, 215, 0, 0.3)",
-  },modalTitle: {
+  },
+  modalTitle: {
     fontSize: 24,
     fontWeight: "bold",
     color: "#FFD700",
     marginBottom: 20,
     textAlign: "center",
-  },input: {
+  },
+  input: {
     backgroundColor: "#2D3B5C",
     borderRadius: 12,
     paddingHorizontal: 16,
@@ -166,12 +171,12 @@ const styles = StyleSheet.create({
     color: "#f9f6deff",
     marginBottom: 15,
   },
-    buttons: {
+  buttons: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginTop: 10,
   },
-    button: {
+  button: {
     flex: 1,
     paddingVertical: 14,
     borderRadius: 12,
@@ -197,5 +202,4 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 16,
   },
-
 });

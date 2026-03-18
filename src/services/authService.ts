@@ -2,7 +2,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { UserModel } from "../models/UserModel";
 import hiveAPI from "./hiveAPI";
-import useAuthStore from "../components/stores/useAuthStore";
+import useAuthStore from "../stores/useAuthStore";
 
 const createUser = async (newUser: UserModel): Promise<UserModel> => {
   const { data } = await hiveAPI.post("/user", newUser);

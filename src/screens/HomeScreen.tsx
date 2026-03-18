@@ -13,22 +13,19 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import useAuthStore from "../stores/useAuthStore";
 
-
-
 import {
   fetchAnime,
   fetchBooks,
   fetchMovies,
   fetchTvShows,
-} from "../../services/mediaService";
+} from "../services/mediaService";
 import { useQueryClient } from "@tanstack/react-query";
-import TrendingTVShows from "../../components/TrendingMedia/TrendingTVShows";
-import TrendingMovies from "../../components/TrendingMedia/TrendingMovies";
-import TrendingAnime from "../../components/TrendingMedia/TrendingAnime";
-import TrendingBooks from "../../components/TrendingMedia/TrendingBooks";
-import CreateMediaListModal from "../../components/CreateList/CreateMediaListModal";
+import TrendingTVShows from "../components/TrendingMedia/TrendingTVShows";
+import TrendingMovies from "../components/TrendingMedia/TrendingMovies";
+import TrendingAnime from "../components/TrendingMedia/TrendingAnime";
+import TrendingBooks from "../components/TrendingMedia/TrendingBooks";
+import CreateMediaListModal from "../components/CreateList/CreateMediaListModal";
 import { ScrollView } from "react-native-gesture-handler";
-
 
 export default function HomeScreen() {
   const user = useAuthStore((state) => state.user);

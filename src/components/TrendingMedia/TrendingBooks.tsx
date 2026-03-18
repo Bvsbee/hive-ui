@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useFetchBooks } from "../../services/mediaService";
 import { useFetchUserLists } from "../../services/listService";
-import useAuthStore from "../stores/useAuthStore";
+import useAuthStore from "../../stores/useAuthStore";
 import { normalizeMedia, useAddItemToList } from "../../services/listService";
 
 import {

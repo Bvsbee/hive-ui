@@ -2,13 +2,13 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
 import { enableScreens } from "react-native-screens";
-import useAuthStore from "./src/stores/useAuthStore";
+import useAuthStore from "./stores/useAuthStore";
 import AuthStack from "./components/Auth/AuthNavigation";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Text } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import ListNavigation from "./components/navigation/ListNavigation";
-import HomeScreen from "./src/screens/HomeScreen";
+import HomeScreen from "./screens/HomeScreen";
 
 enableScreens();
 const Tab = createBottomTabNavigator();
