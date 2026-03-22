@@ -9,6 +9,7 @@ import { Text } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import ListNavigation from "./components/navigation/ListNavigation";
 import HomeScreen from "./screens/HomeScreen";
+import "./styles/global.css";
 
 enableScreens();
 const Tab = createBottomTabNavigator();
