@@ -9,6 +9,7 @@ import { Text } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import ListNavigation from "./components/navigation/ListNavigation";
 import HomeScreen from "./screens/HomeScreen";
+import { ThemeDemoScreen } from "./screens/ThemeDemoScreen";
 import "./styles/global.css";
 
 enableScreens();
@@ -35,16 +36,16 @@ export default function App() {
                   let iconEmoji;
 
                   if (route.name === "Home") {
-                    iconEmoji = "🏠"; // Home emoji
+                    iconEmoji = "🏠";
                   } else if (route.name === "List") {
                     iconEmoji = "📋";
+                  } else if (route.name === "Theme") {
+                    iconEmoji = "🎨";
                   }
                   return (
-                    <>
-                      <Text style={{ fontSize: size, color: color }}>
-                        {iconEmoji}
-                      </Text>
-                    </>
+                    <Text style={{ fontSize: size, color: color }}>
+                      {iconEmoji}
+                    </Text>
                   );
                 },
                 tabBarActiveTintColor: "white", // Example active color
@@ -57,6 +58,11 @@ export default function App() {
                 options={{ headerShown: false }}
               />
               <Tab.Screen name="List" component={ListNavigation} />
+              <Tab.Screen
+                name="Theme"
+                component={ThemeDemoScreen}
+                options={{ headerShown: false }}
+              />
             </Tab.Navigator>
           ) : (
             <AuthStack />
